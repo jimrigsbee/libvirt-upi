@@ -1,0 +1,8 @@
+---
+- name: Creating Helper Node
+  become: true
+  hosts: localhost
+  gather_facts: true
+  roles:
+   - configure_network
+   - create_helper

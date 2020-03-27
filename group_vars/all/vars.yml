@@ -1,11 +1,29 @@
-openshift_version: 4.2.12
+openshift_version: 4.2.19
 openshift_clusternet: 10.8.0.0/14
 openshift_clusternetprefix: 23
 openshift_servicenet: 172.30.0.0/16
 openshift_domain: ocp4
 openshift_routedomain: apps
-network_domain: local.bytewise.my
+network_domain: ocp4.example.com
 
 virt_network_name: ocp4
-virt_network_ip: 192.168.50.0
-virt_network_mask: 24
+virt_network_ip: 192.168.50.1
+virt_network_mask: 255.255.255.0
+virt_network_bridge_name: br1
+
+vm_ssh_key: ~/.ssh/glsdev.pub
+
+vm_files_path: /images/openshift
+
+bastion_vm_disksize: 10G
+bastion_vm_macaddress: "52:54:00:7d:2d:01"
+bastion_vm_ipaddress: "192.168.50.100"
+bastion_vm_network: "ocp4"
+bastion_vm_vcpu: 2
+bastion_vm_memory_gb: 4
+bastion_vm_hostname_short: bastion
+bastion_vm_hostname: "{{bastion_vm_hostname_short}}.{{network_domain}}"
+bastion_vm_disk_image: "{{vm_files_path}}/bastion.qcow2"
+bastion_vm_cloud_init_iso: "{{vm_files_path}}/bastion-ci.iso"
+
+rhel_qcow_image: "/images/rhel-8.1-x86_64-kvm.qcow2"

@@ -1,0 +1,78 @@
+---
+- name: Install KVM packages
+  package:
+    name:
+      - qemu-kvm
+      - libvirt
+      - libguestfs-tools
+      - virt-install
+    state: present
+
+- name: Start KVM service
+  service:
+    name: libvirtd
+    enabled: yes
+    state: started
+
+- name: Create image directory
+  file:
+    state: directory
+    path: "{{ vm_files_path }}"
+
+- name: Create cloud-init working directory
+  file:
+    state: directory
+    path: /tmp/ci
+
+- name: Render cloud-init metadata
+  template:
+    src:  meta-data
+    dest: /tmp/ci/meta-data
+
+- name: Render cloud-init userdata
+  template:
+    src:  user-data
+    dest: /tmp/ci/user-data
+
+- name: Copy cloud image (qcow2)
+  copy:
+    src: "{{ rhel_qcow_image }}"
+    dest: "{{ bastion_vm_disk_image }}"
+    remote_src: true
+
+- name: Create disk image
+  shell: |
+    cd {{ vm_files_path }}
+    export LIBGUESTFS_BACKEND=direct
+    qemu-img create -f qcow2 -o preallocation=metadata {{ bastion_vm_hostname_short}}.new.image {{ bastion_vm_disksize }}
+    virt-resize --quiet --expand /dev/sda1 {{ bastion_vm_disk_image }} {{ bastion_vm_hostname_short }}.new.image
+    mv -v {{ bastion_vm_hostname_short }}.new.image {{ bastion_vm_disk_image }}
+
+- name: Create user-data ISO
+  shell: |
+    cd /tmp/ci
+    mkisofs -o {{ bastion_vm_cloud_init_iso }} -V cidata -J -r user-data meta-data
+
+- name: Get Authorized ssh key
+  slurp:
+    path: "{{ vm_ssh_key }}"
+  register: sshkeypub
+
+- name: Create VM
+  virt:
+    command: define
+    xml: "{{ lookup('template','helper-template.xml.j2') }}"
+    autostart: true
+
+- name: Start VM
+  virt:
+    name: "{{ bastion_vm_hostname_short }}"
+    command: start
+
+- name: Eject cloud-init ISO
+  command: virsh change-media {{ bastion_vm_hostname_short }} sda --eject --config
+
+- name: Remove cloud-init files
+  file:
+    path: /tmp/ci
+    state: absent

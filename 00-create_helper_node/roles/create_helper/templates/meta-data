@@ -1,0 +1,2 @@
+instance-id: "{{ host_vars[inventory_hostname].vm_hostname_short}}"
+local-hostname: "{{ host_vars[inventory_hostname].vm_hostname_short}}"

@@ -1,0 +1,9 @@
+---
+- name: Define virtual network
+  virt_net:
+    state: active
+    command: define
+    name: "{{ virt_network_name }}"
+    xml: "{{ lookup('template', 'network.j2') }}"
+    autostart: yes
+  delegate_to: localhost
