@@ -1,13 +1,4 @@
 ---
-- name: Install KVM packages
-  package:
-    name:
-      - qemu-kvm
-      - libvirt
-      - libguestfs-tools
-      - virt-install
-    state: present
-
 - name: Start KVM service
   service:
     name: libvirtd
@@ -28,6 +19,11 @@
   template:
     src:  meta-data
     dest: /tmp/ci/meta-data
+
+- name: Get Authorized ssh key
+  slurp:
+    path: "{{ vm_ssh_key }}"
+  register: sshkeypub
 
 - name: Render cloud-init userdata
   template:
@@ -52,11 +48,6 @@
   shell: |
     cd /tmp/ci
     mkisofs -o {{ bastion_vm_cloud_init_iso }} -V cidata -J -r user-data meta-data
-
-- name: Get Authorized ssh key
-  slurp:
-    path: "{{ vm_ssh_key }}"
-  register: sshkeypub
 
 - name: Create VM
   virt:

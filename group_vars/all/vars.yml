@@ -11,7 +11,7 @@ virt_network_ip: 192.168.50.1
 virt_network_mask: 255.255.255.0
 virt_network_bridge_name: br1
 
-vm_ssh_key: ~/.ssh/glsdev.pub
+vm_ssh_key: /home/ec2-user/glsdev.pub
 
 vm_files_path: /images/openshift
 
