@@ -1,0 +1,8 @@
+---
+- name: Defining VM
+  delegate_to: localhost
+  virt:
+    command: define
+    xml: "{{ lookup('template','machine-template.xml.j2') }}"
+  tags:
+    - provisioning_libvirt

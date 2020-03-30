@@ -1,0 +1,8 @@
+default menu.c32
+prompt 0
+timeout 50
+menu title **** OpenShift 4 Master PXE Boot Menu ****
+
+label Install CoreOS {{openshift_z_version}} Master Node
+ kernel /openshift4/{{openshift_z_version}}/rhcos-{{openshift_z_version}}-x86_64-installer-kernel
+ append ip=dhcp rd.neednet=1 coreos.inst.install_dev=vda console=tty0 console=ttyS0 coreos.inst=yes coreos.inst.image_url=http://{{ bastion_vm_ipaddress }}:8080/openshift4/images/rhcos-{{openshift_z_version}}-x86_64-metal-bios.raw.gz coreos.inst.ignition_url=http://{{ bastion_vm_ipaddress }}:8080/openshift4/{{ openshift_z_version }}/ignitions/master.ign initrd=/openshift4/{{openshift_z_version}}/rhcos-{{openshift_z_version}}-x86_64-installer-initramfs.img 

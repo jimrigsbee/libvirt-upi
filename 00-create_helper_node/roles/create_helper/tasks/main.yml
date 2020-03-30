@@ -60,6 +60,13 @@
     name: "{{ bastion_vm_hostname_short }}"
     command: start
 
+- name: Define host resolution
+  lineinfile:
+    state: present
+    path: /etc/hosts
+    regexp: "^{{ bastion_vm_ipaddress }}"
+    line: "{{ bastion_vm_ipaddress }} {{ bastion_vm_hostname }}"
+
 - name: Eject cloud-init ISO
   command: virsh change-media {{ bastion_vm_hostname_short }} sda --eject --config
 

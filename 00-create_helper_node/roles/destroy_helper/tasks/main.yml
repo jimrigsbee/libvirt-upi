@@ -1,0 +1,27 @@
+---
+- name: Stop helper node
+  virt:
+    command: stop
+    name: "{{ bastion_vm_hostname_short }}"
+
+- name: Remove helper VM definition
+  virt:
+    command: undefine
+    name: "{{ bastion_vm_hostname_short }}"
+
+- name: Remove host resolution
+  lineinfile:
+    state: absent
+    path: /etc/hosts
+    regexp: "^{{ bastion_vm_ipaddress }}"
+    line: "{{ bastion_vm_ipaddress }} {{ bastion_vm_hostname }}"
+
+- name: Stop virtual network
+  virt_net:
+    command: destroy
+    name: "{{ virt_network_name }}"
+
+- name: Undefine virtual network
+  virt_net:
+    command: undefine
+    name: "{{ virt_network_name }}"

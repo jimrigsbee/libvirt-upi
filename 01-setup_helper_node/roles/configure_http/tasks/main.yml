@@ -1,6 +1,5 @@
 ---
-# tasks file for ../ansible_libvirt_upi_bm/setup_helper_node/roles/configure_http
-- name: Create web hosting directory for images and ignitions file
+- name: Create web hosting directories
   file:
     path: "{{ item }}"
     state: directory
@@ -10,7 +9,7 @@
     - "{{ images_directory }}"
     - "{{ ignitions_directory }}"
 
-- name: Downloading RHCOS 4.1.0 OS BIOS image
+- name: Downloading RHCOS OS BIOS image
   get_url:
     url: "{{ rhcos_biosimg_url }}"
     dest: "{{ images_directory }}"
@@ -21,7 +20,7 @@
       - configure_http_server
       - download_rhcos_image
 
-- name: Downloading RHCOS 4.1.0 OS UEFI image
+- name: Downloading RHCOS OS UEFI image
   get_url:
     url: "{{ rhcos_biosimg_url }}"
     dest: "{{ images_directory }}"

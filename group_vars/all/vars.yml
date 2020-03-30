@@ -1,4 +1,5 @@
-openshift_version: 4.2.19
+openshift_version: 4.2
+openshift_z_version: 4.2.18
 openshift_clusternet: 10.8.0.0/14
 openshift_clusternetprefix: 23
 openshift_servicenet: 172.30.0.0/16
@@ -27,3 +28,9 @@ bastion_vm_disk_image: "{{vm_files_path}}/bastion.qcow2"
 bastion_vm_cloud_init_iso: "{{vm_files_path}}/bastion-ci.iso"
 
 rhel_qcow_image: "/images/rhel-8.1-x86_64-kvm.qcow2"
+
+disable_default_repos: true
+rhel_repos:
+  - rhel-7-server-rpms
+  - rhel-7-server-extras-rpms
+  - rhel-7-server-optional-rpms
