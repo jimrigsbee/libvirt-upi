@@ -16,9 +16,6 @@
     <acpi/>
     <apic/>
   </features>
-  <cpu mode='custom' match='exact' check='partial'>
-    <model fallback='allow'>{{ vm_cpumode }}</model>
-  </cpu>
   <clock offset='utc'>
     <timer name='rtc' tickpolicy='catchup'/>
     <timer name='pit' tickpolicy='delay'/>

@@ -25,6 +25,6 @@
     - configure_ocp_cli_binary
 
 - name: Extracting downloaded client binary
-  shell: tar -C /usr/bin -xvf /usr/bin/openshift-client-linux-{{ openshift__z_version }}.tar.gz
+  shell: tar -C /usr/bin -xvf /usr/bin/openshift-client-linux-{{ openshift_z_version }}.tar.gz
   tags:
     - configure_ocp_cli_binary

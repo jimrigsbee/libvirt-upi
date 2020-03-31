@@ -13,6 +13,7 @@ virt_network_ip: 192.168.50.1
 virt_network_mask: 255.255.255.0
 virt_network_bridge_name: br1
 virt_network_reverse_lookup: 50.168.192
+virt_network: "192.168.50.0/24"
 
 vm_ssh_key: /home/ec2-user/glsdev.pub
 

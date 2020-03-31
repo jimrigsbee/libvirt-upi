@@ -36,7 +36,7 @@
     - configure_ignitions_file
 
 - name: Copy ign file to http hosted folder
-  shell: cp -rvf ~/ocp4/*.ign /var/www/html/openshift4/{{ openshift_z_version }}/ignitions/
+  shell: cp -rvf /tmp/ocp4/*.ign /var/www/html/openshift4/{{ openshift_z_version }}/ignitions/
   tags:
     - configure_ignitions_file
 

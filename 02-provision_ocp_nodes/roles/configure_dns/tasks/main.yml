@@ -1,7 +1,26 @@
 ---
+- name: Remove listener ipv4
+  lineinfile:
+    path: /etc/named.conf
+    regexp: "listen-on port"
+    line: "#listen-on port 53 { 127.0.0.1; };"
+
+- name: Remove listener ipv6
+  lineinfile:
+    path: /etc/named.conf
+    regexp: "listen-on-v6"
+    line: "#listen-on-v6 port 53 { ::1; };"
+
+- name: Allow queries from subnet 
+  lineinfile:
+    path: /etc/named.conf
+    regexp: "allow-query"
+    line: "               allow-query { localhost; {{ virt_network }}; };" 
+
 - name: Add domain zone to DNS server
   blockinfile:
     path: /etc/named.conf
+    marker: "# {mark} ANSIBLE MANAGED DNS ZONE"
     block: |
       zone "{{ network_domain }}" {
           type master;
@@ -12,11 +31,12 @@
 - name: Define domain zone
   template:
     src: domain.j2
-    path: "/var/named/{{ network_domain }}.db"
+    dest: "/var/named/{{ network_domain }}.db"
 
 - name: Add reverse lookup zone to DNS server
   blockinfile:
     path: /etc/named.conf
+    marker: "# {mark} ANSIBLE MANAGED DNS REVERSE ZONE"
     block: |
       zone "{{ virt_network_reverse_lookup }}.in-addr.arpa" IN {
           type master;
@@ -27,7 +47,7 @@
 - name: Define domain zone
   template:
     src: reverse.j2
-    path: "/var/named/{{ network_domain }}.reverse.db"
+    dest: "/var/named/{{ network_domain }}.reverse.db"
 
 - name: Restart DNS services
   service:
