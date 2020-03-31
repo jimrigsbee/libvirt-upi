@@ -32,6 +32,5 @@ rhel_qcow_image: "/images/rhel-8.1-x86_64-kvm.qcow2"
 
 disable_default_repos: true
 rhel_repos:
-  - rhel-7-server-rpms
-  - rhel-7-server-extras-rpms
-  - rhel-7-server-optional-rpms
+  - rhel-8-for-x86_64-baseos-rpms
+  - rhel-8-for-x86_64-appstream-rpms

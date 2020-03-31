@@ -1,6 +1,6 @@
 <network>
   <name>{{virt_network_name}}</name>
-  <forward mode='nat'>
+  <forward mode='nat' dev='eth0'>
     <nat>
       <port start='1024' end='65535'/>
     </nat>
