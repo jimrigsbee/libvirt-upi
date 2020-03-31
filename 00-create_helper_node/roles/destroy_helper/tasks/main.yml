@@ -1,27 +1,48 @@
 ---
-- name: Stop helper node
+- name: See if VM is defined
   virt:
-    command: stop
-    name: "{{ bastion_vm_hostname_short }}"
+    command: list_vms
+  register: all_vms
 
-- name: Remove helper VM definition
-  virt:
-    command: undefine
-    name: "{{ bastion_vm_hostname_short }}"
+- name: Delete VM 
+  when: bastion_vm_hostname_short in all_vms.list_vms
+  block:  
+  - name: Stop helper node
+    virt:
+      command: destroy 
+      name: "{{ bastion_vm_hostname_short }}"
 
-- name: Remove host resolution
-  lineinfile:
-    state: absent
-    path: /etc/hosts
-    regexp: "^{{ bastion_vm_ipaddress }}"
-    line: "{{ bastion_vm_ipaddress }} {{ bastion_vm_hostname }}"
+  - name: Remove helper VM definition
+    virt:
+      command: undefine
+      name: "{{ bastion_vm_hostname_short }}"
 
-- name: Stop virtual network
+  - name: Remove host resolution
+    lineinfile:
+      state: absent
+      path: /etc/hosts
+      regexp: "^{{ bastion_vm_ipaddress }}"
+      line: "{{ bastion_vm_ipaddress }} {{ bastion_vm_hostname }}"
+
+  - name: Cleanup server files
+    shell: |
+      rm -f {{ vm_files_path }}/{{ bastion_vm_hostname_short }}*
+
+- name: list all networks 
   virt_net:
-    command: destroy
-    name: "{{ virt_network_name }}"
+    command: list_nets
+  register: all_nets
 
-- name: Undefine virtual network
-  virt_net:
-    command: undefine
-    name: "{{ virt_network_name }}"
+- name: Delete network
+  when: virt_network_name in all_nets.list_nets
+  block:
+  - name: Stop virtual network
+    virt_net:
+      command: destroy
+      name: "{{ virt_network_name }}"
+
+  - name: Undefine virtual network
+    virt_net:
+      command: undefine
+      name: "{{ virt_network_name }}"
+

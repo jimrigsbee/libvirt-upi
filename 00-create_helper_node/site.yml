@@ -6,12 +6,3 @@
   roles:
    - configure_network
    - create_helper
-  when: ACTION = 'create'
-
-- name: Destroy Helper Node
-  become: true
-  hosts: localhost
-  gather_facts: true
-  roles:
-    - destroy_helper
-  when: ACTION = 'delete'
