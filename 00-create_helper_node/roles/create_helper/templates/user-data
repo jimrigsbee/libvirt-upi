@@ -36,7 +36,7 @@ runcmd:
   - nmcli con mod "System eth0" ipv4.addresses {{ bastion_vm_ipaddress }}/24
   - nmcli con mod "System eth0" ipv4.method static
   - nmcli con mod "System eth0" ipv4.dns {{ bastion_vm_ipaddress }}
-  - nmcli con mod "System eth0" ipv4.dns-search {{ network_domain }}
+  - nmcli con mod "System eth0" ipv4.dns-search '{{ network_subdomain }},{{ network_domain }}'
   - nmcli con reload
   - nmcli con up "System eth0"
   - echo 'redhat' | passwd --stdin root

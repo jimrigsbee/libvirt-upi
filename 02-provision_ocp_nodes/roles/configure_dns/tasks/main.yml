@@ -1,0 +1,36 @@
+---
+- name: Add domain zone to DNS server
+  blockinfile:
+    path: /etc/named.conf
+    block: |
+      zone "{{ network_domain }}" {
+          type master;
+          file "{{ network_domain }}.db";
+          allow-update { none; };
+      };
+
+- name: Define domain zone
+  template:
+    src: domain.j2
+    path: "/var/named/{{ network_domain }}.db"
+
+- name: Add reverse lookup zone to DNS server
+  blockinfile:
+    path: /etc/named.conf
+    block: |
+      zone "{{ virt_network_reverse_lookup }}.in-addr.arpa" IN {
+          type master;
+          file "{{ network_domain }}.reverse.db";
+          allow-update { none; };
+      };
+
+- name: Define domain zone
+  template:
+    src: reverse.j2
+    path: "/var/named/{{ network_domain }}.reverse.db"
+
+- name: Restart DNS services
+  service:
+    name: named
+    state: restarted
+    enabled: yes

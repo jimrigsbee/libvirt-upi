@@ -7,6 +7,8 @@ rhel8_pkgs:
   - haproxy.x86_64
   - wget
   - vim
+  - bind
+  - bind-utils
 
 rhel7_pkgs:
   - dhcp
@@ -16,3 +18,5 @@ rhel7_pkgs:
   - haproxy.x86_64
   - wget
   - vim
+  - bind
+  - bind-utils

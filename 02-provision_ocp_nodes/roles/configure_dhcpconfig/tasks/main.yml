@@ -6,13 +6,11 @@
     dest: /etc/dhcp/dhcpd.conf
   tags:
     - update_dhcpd_config
-  when: inventory_hostname in groups['helper_vm']
 
 - name: Restart DHCP services
   service:
     name: dhcpd
     state: restarted
     enabled: yes
-  when: inventory_hostname in groups['helper_vm'] 
   tags:
     - update_dhcpd_config

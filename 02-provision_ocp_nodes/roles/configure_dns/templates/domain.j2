@@ -1,0 +1,26 @@
+$TTL  1D
+@     IN  SOA dns.{{ network_subdomain }}. root.{{ network_domain }}. (
+                2019022400 ; serial
+                3h         ; refresh
+                15         ; retry
+                1w         ; expire
+                3h         ; minimum
+              )
+          IN NS dns.{{ network_subdomain }}.
+dns.{{ openshift_clustername }}      IN A {{ bastion_vm_ipaddress }}
+api.{{ openshift_clustername }}      IN A {{ bastion_vm_ipaddress }}
+api-int.{{ openshift_clustername }}  IN A {{ bastion_vm_ipaddress }}
+*.apps.{{ openshift_clustername }}   IN A {{ bastion_vm_ipaddress }}
+{% for vm in groups['ocp4_bootstrap_vm'] %}
+{{ vm.split('.')[0] }}.{{ openshift_clustername }} IN A {{ hostvars[vm].vm_ipaddress }}
+{% endfor %}
+{% for vm in groups['ocp4_master_vm'] %}
+    {% if vm not in groups['ocp4_bootstrap_vm'] %}
+{{ vm.split('.')[0] }}.{{ openshift_clustername }} IN A {{ hostvars[vm].vm_ipaddress }}
+etcd-{{ loop.index0 }}.{{ openshift_clustername }} IN A {{ hostvars[vm].vm_ipaddress }}
+_etcd-server-ssl._tcp.{{ openshift_clustername }}  IN SRV 0 10 2380 etcd-{{ loop.index0 }}.{{ openshift_clustername }}
+    {% endif %}
+{% endfor %}
+{% for vm in groups['ocp4_worker_vm'] %}
+{{ vm.split('.')[0] }}.{{ openshift_clustername }} IN A {{ hostvars[vm].vm_ipaddress }}
+{% endfor %}

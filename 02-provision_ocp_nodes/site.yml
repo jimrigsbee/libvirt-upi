@@ -4,6 +4,7 @@
   hosts: helper_vm
   gather_facts: false
   roles:
+    - configure_dns
     - configure_dhcpconfig
     - configure_pxeconfig
     - configure_lbconfig
@@ -11,10 +12,6 @@
 
 - name: Preparing and Deploying VM on Libvirt
   become: true
-  # vars:
-  #   libvirt_storage_pool:
-  #     - nvme-images
-  #     - ssd-images
   hosts: ocp4_nodes
   gather_facts: false
   roles:

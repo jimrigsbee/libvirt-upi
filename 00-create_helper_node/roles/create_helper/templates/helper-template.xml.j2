@@ -46,7 +46,7 @@
     </disk>
     <interface type='network'>
       <mac address='{{ bastion_vm_macaddress }}'/>
-      <source network='{{ bastion_vm_network }}'/>
+      <source network='{{ virt_network_name }}'/>
       <model type='virtio'/>
       <boot order='2'/>
     </interface>
