@@ -1,5 +1,10 @@
 ---
-# tasks file for ../ansible_libvirt_upi_bm/setup_helper_node/roles/configure_firewall
+- name: Make sure firewall service is running
+  service:
+    name: firewalld
+    enabled: true
+    state: restarted
+    
 - name: Allowing firewall rules for services
   firewalld:
     service: "{{ item }}"

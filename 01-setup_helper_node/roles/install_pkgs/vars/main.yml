@@ -9,6 +9,7 @@ rhel8_pkgs:
   - vim
   - bind
   - bind-utils
+  - firewalld
 
 rhel7_pkgs:
   - dhcp
@@ -20,3 +21,4 @@ rhel7_pkgs:
   - vim
   - bind
   - bind-utils
+  - firewalld
