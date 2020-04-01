@@ -5,8 +5,15 @@ openshift_clusternetprefix: 23
 openshift_servicenet: 172.30.0.0/16
 openshift_clustername: ocp4
 openshift_routedomain: apps
+openshift_installer_dir: "/home/{{ bastion_cloud_user }}/{{ openshift_clustername }}"
 network_domain: example.com
 network_subdomain: "{{ openshift_clustername }}.{{ network_domain }}"
+
+# define the following in secrets file
+#admin_user: admin
+#admin_password: something
+#developer_user: developer
+#developer_password: something
 
 virt_network_name: ocp4
 virt_network_ip: 192.168.50.1
@@ -28,6 +35,7 @@ bastion_vm_hostname_short: bastion
 bastion_vm_hostname: "{{bastion_vm_hostname_short}}.{{network_subdomain}}"
 bastion_vm_disk_image: "{{vm_files_path}}/bastion.qcow2"
 bastion_vm_cloud_init_iso: "{{vm_files_path}}/bastion-ci.iso"
+bastion_cloud_user: helper
 
 rhel_qcow_image: "/images/rhel-8.1-x86_64-kvm.qcow2"
 

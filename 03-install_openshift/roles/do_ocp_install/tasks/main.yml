@@ -1,0 +1,115 @@
+---
+- name: Start Cluster VMs
+  virt:
+    command: start
+    name: "{{ item }}"
+  with_items: "{{ groups['ocp4_nodes'] }}"
+
+- name: Wait for bootstrap to complete
+  shell: |
+    cd {{ openshift_installer_dir }}
+    /usr/bin/openshift-install wait-for bootstrap-complete --log-level debug
+
+# remove bootstrap:
+# remove from load balancer - haproxy and restart haproxy
+# shutdown VM
+# undefine VM
+
+- name: Make sure .kube directory exists in home directory
+  file:
+    state: directory
+    path: "/home/{{ bastion_cloud_user }}/.kube"
+    owner: "{{ bastion_cloud_user }}"
+    mode: 0775
+
+- name: Set up .kube/config
+  copy:
+    remote_src: yes
+    src: "{{ openshift_installer_dir }}/auth/kubeconfig"
+    dest: "/home/{{ bastion_cloud_user }}/.kube/config"
+
+- name: Make sure .kube directory exists in /root
+  file:
+    state: directory
+    path: /root/.kube
+    owner: root
+    mode: 0700
+  become: yes
+
+- name: Set up .kube/config for root
+  copy:
+    remote_src: yes
+    src: "{{ openshift_installer_dir }}/auth/kubeconfig"
+    dest: /root/.kube/config
+  become: yes
+
+- name: Sign CSRs
+  shell: |
+    oc get csr -ojson | \
+      jq -r '.items[] | select(.status == {} ) | .metadata.name' | \
+      xargs oc adm certificate approve
+
+- name: Patch image registry storage location
+  shell: |
+    oc patch configs.imageregistry.operator.openshift.io cluster \
+      --type merge --patch '{"spec":{"storage":{"emptyDir":{}}}}'
+
+- name: Wait for install to complete
+  shell: |
+    cd {{ openshift_installer_dir }}
+    /usr/bin/openshift-install wait-for install-complete
+
+# smoke test
+
+# configure htpasswd with optional admin/developer user accounts
+
+- name: Generate htpasswd hash for user_password
+  shell: >-
+    htpasswd -nb "{{ developer_user }}" "{{ developer_password }}" | cut -d: -f2
+  register: htpasswd_line
+  when:
+    - developer_user is defined
+
+- name: Set fact user_password_hash
+  set_fact:
+    developer_password_hash: "{{ htpasswd_line.stdout }}"
+  when:
+    - developer_user is defined
+    - htpasswd_line is succeeded
+
+- name: Generate htpasswd hash for admin user
+  shell: >-
+    htpasswd -nb "{{ admin_user }}" "{{ admin_password }}" | cut -d: -f2
+  register: htpasswd_line
+  when:
+    - admin_user is defined
+
+- name: Set fact admin_password_hash
+  set_fact:
+    admin_password_hash: "{{ htpasswd_line.stdout }}"
+  when:
+    - admin_user is defined
+    - htpasswd_line is succeeded
+
+- name: Generate htpasswd file
+  template:
+    src: htpasswd.j2
+    dest: "/home/{{ bastion_cloud_user }}/users.htpasswd"
+    owner: "{{ bastion_cloud_user }}"
+    mode: 0664
+
+- name: Upload OAuth Configuration File
+  copy:
+    src: oauth-htpasswd.yaml
+    dest: "/home/{{ bastion_cloud_user }}/oauth-htpasswd.yaml"
+    owner: "{{ bastion_cloud_user }}"
+    mode: 0664
+
+- name: Create htpasswd Secret
+  command: "oc create secret generic htpasswd-secret -n openshift-config --from-file=htpasswd=/home/{{ bastion_cloud_user }}/users.htpasswd"
+  ignore_errors: true
+
+- name: Update OAuth Configuration
+  shell: "oc apply -f /home/{{ bastion_cloud_user }}/oauth-htpasswd.yaml"
+
+# upgrade

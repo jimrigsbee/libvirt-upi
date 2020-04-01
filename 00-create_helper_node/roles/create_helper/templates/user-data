@@ -8,7 +8,7 @@ fqdn: {{ bastion_vm_hostname }}
 # Setup Users with ssh keys
 users:
     - default
-    - name: helper
+    - name: {{ bastion_cloud_user }}
       groups: ['wheel']
       shell: /bin/bash
       sudo: ALL=(ALL) NOPASSWD:ALL

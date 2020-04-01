@@ -12,6 +12,7 @@ rhel8_pkgs:
   - firewalld
   - ansible
   - git
+  - jq
 
 rhel7_pkgs:
   - dhcp

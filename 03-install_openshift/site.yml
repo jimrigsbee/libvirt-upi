@@ -1,0 +1,7 @@
+---
+- name: Install OpenShift
+  become: false
+  hosts: helper_vm
+  gather_facts: false
+  roles:
+    - do_ocp_install
