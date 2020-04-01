@@ -4,6 +4,7 @@
   virt:
     command: destroy
     name: "{{ inventory_hostname }}"
+  ignore_errors: true 
 
 - name: Undefine VM
   delegate_to: localhost
