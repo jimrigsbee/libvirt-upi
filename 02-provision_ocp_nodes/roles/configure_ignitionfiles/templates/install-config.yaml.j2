@@ -20,3 +20,4 @@ networking:
 platform:
   none: {}
 pullSecret: '{{ ocp_pull_secret }}'
+sshKey: '{{ sshkeypub.content | b64decode }}'

@@ -10,6 +10,8 @@ rhel8_pkgs:
   - bind
   - bind-utils
   - firewalld
+  - ansible
+  - git
 
 rhel7_pkgs:
   - dhcp
@@ -22,3 +24,5 @@ rhel7_pkgs:
   - bind
   - bind-utils
   - firewalld
+  - ansible
+  - git

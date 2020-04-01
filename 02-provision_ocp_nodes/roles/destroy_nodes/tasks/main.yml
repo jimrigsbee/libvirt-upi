@@ -1,0 +1,18 @@
+---
+- name: Stopping VM
+  delegate_to: localhost
+  virt:
+    command: destroy
+    name: "{{ inventory_hostname }}"
+
+- name: Undefine VM
+  delegate_to: localhost
+  virt:
+    command: undefine
+    name: "{{ inventory_hostname }}"
+
+- name: Cleanup storage
+  delegate_to: localhost
+  file:
+    path: '{{ vm_files_path }}/{{ inventory_hostname }}.qcow2'
+    state: absent
