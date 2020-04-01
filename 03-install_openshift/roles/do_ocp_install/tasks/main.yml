@@ -114,7 +114,9 @@
     mode: 0664
 
 - name: Create htpasswd Secret
-  command: "oc create secret generic htpasswd-secret -n openshift-config --from-file=htpasswd=/home/{{ bastion_cloud_user }}/users.htpasswd"
+  shell: |
+    oc delete secret htpasswd-secret -n openshiftp-config
+    oc create secret generic htpasswd-secret -n openshift-config --from-file=htpasswd=/home/{{ bastion_cloud_user }}/users.htpasswd
   ignore_errors: true
 
 - name: Update OAuth Configuration
