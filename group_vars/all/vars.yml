@@ -31,7 +31,7 @@ bastion_vm_macaddress: "52:54:00:7d:2d:01"
 bastion_vm_ipaddress: "192.168.50.100"
 bastion_vm_vcpu: 2
 bastion_vm_memory_gb: 4
-bastion_vm_hostname_short: bastion
+bastion_vm_hostname_short: utility
 bastion_vm_hostname: "{{bastion_vm_hostname_short}}.{{network_subdomain}}"
 bastion_vm_disk_image: "{{vm_files_path}}/bastion.qcow2"
 bastion_vm_cloud_init_iso: "{{vm_files_path}}/bastion-ci.iso"
