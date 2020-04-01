@@ -91,7 +91,7 @@ defaults
    balance roundrobin
    mode tcp
    {% for vm in groups['ocp4_bootstrap_vm'] %}
-      server {{ vm.split('.')[0] }} {{ hostvars[vm].vm_ipaddress }}:6443 check
+      server {{ vm.split('.')[0] }} {{ hostvars[vm].vm_ipaddress }}:22623 check
    {% endfor %}
    {% for vm in groups['ocp4_master_vm'] %}
       server {{ vm.split('.')[0] }} {{ hostvars[vm].vm_ipaddress }}:22623 check
