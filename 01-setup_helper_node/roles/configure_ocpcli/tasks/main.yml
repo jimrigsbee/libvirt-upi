@@ -28,3 +28,11 @@
   shell: tar -C /usr/bin -xvf /usr/bin/openshift-client-linux-{{ openshift_z_version }}.tar.gz
   tags:
     - configure_ocp_cli_binary
+
+- name: Copy SSH private key
+  copy:
+    src: "{{ vm_ssh_private_key_location }}"
+    dest: "/home/{{ bastion_cloud_user }}/.ssh/{{ vm_ssh_private_key }}"
+    owner: "{{ bastion_cloud_user }}"
+    group: "{{ bastion_cloud_user }}"
+    mode: 0400

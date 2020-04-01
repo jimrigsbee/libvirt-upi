@@ -23,6 +23,8 @@ virt_network_reverse_lookup: 50.168.192
 virt_network: "192.168.50.0/24"
 
 vm_ssh_key: /home/ec2-user/glsdev.pub
+vm_ssh_private_key: glsdev
+vm_ssh_private_key_location: /home/ec2-user/glsdev
 
 vm_files_path: /images/openshift
 
@@ -43,4 +45,3 @@ disable_default_repos: true
 rhel_repos:
   - rhel-8-for-x86_64-baseos-rpms
   - rhel-8-for-x86_64-appstream-rpms
-  - ansible-2.9-for-rhel-8-x86_64-rpms

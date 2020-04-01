@@ -10,7 +10,6 @@ rhel8_pkgs:
   - bind
   - bind-utils
   - firewalld
-  - ansible
   - git
   - jq
 
@@ -25,5 +24,4 @@ rhel7_pkgs:
   - bind
   - bind-utils
   - firewalld
-  - ansible
   - git
