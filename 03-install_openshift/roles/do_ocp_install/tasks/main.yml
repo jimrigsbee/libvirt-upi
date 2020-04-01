@@ -1,5 +1,8 @@
 ---
 - name: Start Cluster VMs
+  delegate_to: localhost
+  become: true
+  ignore_errors: true
   virt:
     command: start
     name: "{{ item }}"
