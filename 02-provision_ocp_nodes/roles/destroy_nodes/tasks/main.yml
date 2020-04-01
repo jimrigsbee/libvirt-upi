@@ -11,6 +11,7 @@
   virt:
     command: undefine
     name: "{{ inventory_hostname }}"
+  ignore_errors: true 
 
 - name: Cleanup storage
   delegate_to: localhost

@@ -46,11 +46,16 @@
     dest: /root/.kube/config
   become: yes
 
-- name: Sign CSRs
+- name: Get any CSRs
   shell: |
     oc get csr -ojson | \
-      jq -r '.items[] | select(.status == {} ) | .metadata.name' | \
-      xargs oc adm certificate approve
+      jq -r '.items[] | select(.status == {} ) | .metadata.name'
+  register: csrs
+
+- name: Sign CSRs
+  shell: |
+      oc adm certificate approve {{ item }}
+  with_items: "{{ csrs.stdout_lines }}"
 
 - name: Patch image registry storage location
   shell: |
@@ -102,7 +107,7 @@
     mode: 0664
 
 - name: Upload OAuth Configuration File
-  copy:
+  template:
     src: oauth-htpasswd.yaml
     dest: "/home/{{ bastion_cloud_user }}/oauth-htpasswd.yaml"
     owner: "{{ bastion_cloud_user }}"
