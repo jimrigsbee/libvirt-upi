@@ -16,7 +16,6 @@
   tags:
       - configure_pxe_server
       - update_pxe_config
-  when: item not in groups['ocp4_bootstrap_vm']
   with_items: "{{ groups['ocp4_master_vm'] }}"
 
 - name: Update /var/lib/tftpboot/pxelinux.cfg/worker
