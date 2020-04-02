@@ -152,7 +152,7 @@
   register: newproject
 
 - name: New-app
-  command: oc new-app cakephp-mysql-persistent -n postflightcheck
+  command: oc new-app cakephp-mysql-example -n postflightcheck
   register: newapp
 
 - name: Wait for mysql
@@ -161,7 +161,7 @@
   changed_when: false
 
 - name: Wait for php
-  command: timeout 300 oc rollout status dc/cakephp-mysql-persistent -w -n postflightcheck
+  command: timeout 300 oc rollout status dc/cakephp-mysql-example -w -n postflightcheck
   register: phpw
   changed_when: false
   retries: 2
@@ -171,7 +171,7 @@
 - name: Get route
   command: >-
     oc get route
-    -l template=cakephp-mysql-persistent
+    -l template=cakephp-mysql-example
     --no-headers
     -o json
     -n postflightcheck
