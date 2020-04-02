@@ -46,7 +46,7 @@
   - name: Cleanup bootstrap storage
     delegate_to: localhost
     file:
-      path: '{{ vm_files_path }}/{{ groups['ocp4_bootstrap_vm'][0] }}.qcow2'
+      path: "{{ vm_files_path }}/{{ groups['ocp4_bootstrap_vm'][0] }}.qcow2"
       state: absent
 
 - name: Make sure .kube directory exists in home directory
