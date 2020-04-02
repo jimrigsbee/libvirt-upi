@@ -7,7 +7,7 @@ openshift_clustername: ocp4
 openshift_routedomain: apps
 openshift_installer_dir: "/home/{{ bastion_cloud_user }}/{{ openshift_clustername }}"
 openshift_upgrade: false
-openshift_smoke_tests: false
+openshift_smoke_tests: true
 network_domain: example.com
 network_subdomain: "{{ openshift_clustername }}.{{ network_domain }}"
 
