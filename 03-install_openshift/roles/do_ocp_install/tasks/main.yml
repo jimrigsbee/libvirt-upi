@@ -269,7 +269,7 @@
 
 - name: Create htpasswd Secret
   shell: |
-    oc delete secret htpasswd-secret -n openshiftp-config
+    oc delete secret htpasswd-secret -n openshift-config
     oc create secret generic htpasswd-secret -n openshift-config --from-file=htpasswd=/home/{{ bastion_cloud_user }}/users.htpasswd
   ignore_errors: true
 
@@ -277,7 +277,7 @@
   shell: "oc apply -f /home/{{ bastion_cloud_user }}/oauth-htpasswd.yaml"
 
 - name: Make admin user a cluster admin
-  shell: "oc adm add-cluster-role-to-user cluster-admin {{ admin_user }}"
+  shell: "oc adm policy add-cluster-role-to-user cluster-admin {{ admin_user }}"
   when: admin_user is defined
 
 # optionally upgrade cluster
