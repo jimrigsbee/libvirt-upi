@@ -12,11 +12,37 @@
   shell: |
     cd {{ openshift_installer_dir }}
     /usr/bin/openshift-install wait-for bootstrap-complete --log-level debug
+  async: "{{ 35 * 60 }}"
 
-# remove bootstrap:
-# remove from load balancer - haproxy and restart haproxy
-# shutdown VM
-# undefine VM
+- name: Remove Bootstrap Infrastructure
+  become: true
+  block:
+  - name: Remove Machine Config bootstrap in LB
+    lineinfile:
+      state: absent
+      regexp: "server bootstrap.*22623"
+      path: /etc/haproxy/haproxy.cfg
+  - name: Remove API bootstrap in LB
+    lineinfile:
+      state: absent
+      regexp: "server bootstrap.*6443"
+      path: /etc/haproxy/haproxy.cfg
+  - name: Restart load balancer
+    service:
+      name: haproxy
+      state: restarted
+  - name: Stop bootstrap VM
+    delegate_to: localhost
+    ignore_errors: true
+    virt:
+      command: destroy
+      name: "{{ groups['ocp4_bootstrap_vm'][0] }}"
+  - name: Undefine bootstrap VM
+    delegate_to: localhost
+    ignore_errors: true
+    virt:
+      command: undefine
+      name: "{{ groups['ocp4_bootstrap_vm'][0] }}"
 
 - name: Make sure .kube directory exists in home directory
   file:
@@ -66,8 +92,131 @@
   shell: |
     cd {{ openshift_installer_dir }}
     /usr/bin/openshift-install wait-for install-complete
+  async: "{{ 35 * 60 }}"
 
 # smoke test
+- name: Get API for command line
+  command: oc whoami --show-server
+  register: showserver
+
+- name: Discover web console URI
+  when: webconsole is not defined
+  block:
+    - name: Get console route
+      command: oc get route -n openshift-console console -o json
+      register: routeconsole
+      retries: 10
+      delay: 30
+      until: routeconsole is succeeded
+      ignore_errors: yes
+
+    - name: Set webconsole address
+      set_fact:
+        webconsole: "http://{{ routeconsole.stdout | from_json | json_query('spec.host') }}"
+      when: routeconsole is succeeded
+
+- name: Check DNS webconsole
+  command: nslookup "{{ webconsole | urlsplit('hostname') }}"
+  register: checkdnswebconsole
+  changed_when: false
+  retries: 15
+  until: checkdnswebconsole is succeeded
+  delay: 30
+
+- name: Check DNS API
+  command: nslookup "{{ showserver.stdout | trim | urlsplit('hostname') }}"
+  register: checkdnsapi
+  changed_when: false
+
+- name: Webconsole
+  uri:
+    url: "{{ webconsole }}"
+    validate_certs: no
+  register: testwebconsole
+  retries: 5
+  until: testwebconsole is succeeded
+  delay: 60
+
+- name: Cluster-info
+  command: oc cluster-info
+  register: clusterinfor
+  changed_when: false
+
+- name: Create project
+  command: oc new-project postflightcheck
+  register: newproject
+
+- name: New-app
+  command: oc new-app cakephp-mysql-persistent -n postflightcheck
+  register: newapp
+
+- name: Wait for mysql
+  command: timeout 300 oc rollout status dc/mysql -w -n postflightcheck
+  register: mysqlw
+  changed_when: false
+
+- name: Wait for php
+  command: timeout 300 oc rollout status dc/cakephp-mysql-persistent -w -n postflightcheck
+  register: phpw
+  changed_when: false
+  retries: 2
+  delay: 60
+  until: phpw is succeeded
+
+- name: Get route
+  command: >-
+    oc get route
+    -l template=cakephp-mysql-persistent
+    --no-headers
+    -o json
+    -n postflightcheck
+  register: getroute
+  changed_when: false
+  retries: 10
+  delay: 5
+  until: getroute is succeeded
+
+- name: Test that route is reachable
+  uri:
+    url: "http://{{ getroute.stdout|from_json|json_query('items[0].spec.host') }}"
+  register: testroute
+  retries: 15
+  delay: 5
+  until: testroute is succeeded
+
+- name: Delete project
+  command: oc delete project postflightcheck
+
+- name: Switch back to default project
+  command: oc project default
+
+- debug:
+    msg: "{{ item }}"
+  loop:
+    - "user.info: "
+    - "user.info: Post Flight Check"
+    - "user.info: DNS Web Console ............... {{ 'OK' if checkdnswebconsole.rc == 0 else 'FAIL' }}"
+    - "user.info: DNS API ....................... {{ 'OK' if checkdnsapi.rc == 0 else 'FAIL' }}"
+    - "user.info: Web console ................... {{ 'OK' if testwebconsole is succeeded else 'FAIL' }}"
+    - "user.info: API ........................... {{ 'OK' if clusterinfor.rc == 0 else 'FAIL' }}"
+    - "user.info: Create Project with PV ........ {{ 'OK' if newproject.rc == 0 else 'FAIL' }}"
+    - "user.info: App deployed .................. {{ 'OK' if phpw.rc == 0 and mysqlw.rc == 0 else 'FAIL' }}"
+    - "user.info: Route ......................... {{ 'OK' if testroute is succeeded else 'FAIL' }}"
+
+- when:
+    - openshift_smoke_tests | bool
+    - >-
+      checkdnswebconsole.rc != 0
+      or checkdnsapi.rc != 0
+      or testwebconsole is failed
+      or clusterinfor.rc != 0
+      or newproject.rc != 0
+      or phpw.rc != 0
+      or mysqlw.rc != 0
+      or testroute is failed
+  fail:
+    msg: "FAIL Smoke tests"
+  ignore_errors: no
 
 # configure htpasswd with optional admin/developer user accounts
 
@@ -122,4 +271,24 @@
 - name: Update OAuth Configuration
   shell: "oc apply -f /home/{{ bastion_cloud_user }}/oauth-htpasswd.yaml"
 
-# upgrade
+- name: Make admin user a cluster admin
+  shell: "oc adm add-cluster-role-to-user cluster-admin {{ admin_user }}"
+  when: admin_user is defined
+
+# optionally upgrade cluster
+- name: Upgrade cluster
+  when: openshift_upgrade
+  block:
+  - name: Upgrade cluster if available
+    shell: |
+      oc adm upgrade --to-latest=true
+  - name: Wait for upgrade to begin
+    pause:
+      seconds: 10
+  - name: Get cluster version info
+    shell: |
+      oc get clusterversion version -ojson | jq -r '.status.conditions[] | select(.type=="Progressing") | .message'
+    register: clusterstatus
+  - name: Notify of upgrade status
+    debug:
+      msg: "Requested upgrade. Status is {{ clusterstatus.stdout }}"

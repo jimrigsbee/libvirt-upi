@@ -6,6 +6,8 @@ openshift_servicenet: 172.30.0.0/16
 openshift_clustername: ocp4
 openshift_routedomain: apps
 openshift_installer_dir: "/home/{{ bastion_cloud_user }}/{{ openshift_clustername }}"
+openshift_upgrade: false
+openshift_smoke_tests: false
 network_domain: example.com
 network_subdomain: "{{ openshift_clustername }}.{{ network_domain }}"
 
@@ -41,7 +43,7 @@ bastion_cloud_user: helper
 
 rhel_qcow_image: "/images/rhel-8.1-x86_64-kvm.qcow2"
 
-disable_default_repos: true
+disable_default_repos: false
 rhel_repos:
   - rhel-8-for-x86_64-baseos-rpms
   - rhel-8-for-x86_64-appstream-rpms
