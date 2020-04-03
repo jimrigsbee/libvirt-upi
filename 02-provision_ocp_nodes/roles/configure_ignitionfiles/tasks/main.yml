@@ -24,6 +24,7 @@
   register: sshkeypub
 
 - name: Prepare ignition files
+  become: no
   template:
     src: install-config.yaml.j2
     dest: "{{ openshift_installer_dir }}/install-config.yaml"
@@ -31,6 +32,7 @@
     - configure_ignitions_file
 
 - name: Execute openshift installer file
+  become: no
   shell: /usr/bin/openshift-install create ignition-configs --dir={{ openshift_installer_dir }}
   tags:
     - configure_ignitions_file

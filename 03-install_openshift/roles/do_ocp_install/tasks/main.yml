@@ -12,7 +12,7 @@
   shell: |
     cd {{ openshift_installer_dir }}
     /usr/bin/openshift-install wait-for bootstrap-complete --log-level debug
-  async: "{{ 35 * 60 }}"
+  async: "{{ 45 * 60 }}"
 
 - name: Remove Bootstrap Infrastructure
   become: true
@@ -91,7 +91,7 @@
 - name: Add epel-release repo
   package:
     state: present
-    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
   become: true
 
 - name: Install Python Dependencies
