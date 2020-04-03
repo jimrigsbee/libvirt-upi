@@ -11,6 +11,9 @@
   file:
     path: "{{ openshift_installer_dir }}"
     state: directory
+    owner: "{{ bastion_cloud_user }}"
+    group: "{{ bastion_cloud_user }}"
+    mode: 0775
   tags:
     - configure_ignitions_file
 
@@ -52,12 +55,3 @@
   command: restorecon -RFv /var/www/html
   tags:
     - configure_ignitions_file
-
-- name: Fix up cloud user home permissions
-  file:
-    path: "/home/{{ bastion_cloud_user }}"
-    state: directory
-    owner: "{{ bastion_cloud_user }}"
-    group: "{{ bastion_cloud_user }}"
-    mode: 0755
-    recurse: yes
