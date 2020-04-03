@@ -29,5 +29,5 @@ spec:
       volumes:
         - name: nfs-client-root
           nfs:
-            server: bastion_vm_ipaddress }}
+            server: {{ bastion_vm_ipaddress }}
             path: /exports

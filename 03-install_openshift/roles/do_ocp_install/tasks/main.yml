@@ -88,6 +88,19 @@
       oc adm certificate approve {{ item }}
   with_items: "{{ csrs.stdout_lines }}"
 
+- name: Add epel-release repo
+  package:
+    state: present
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  become: true
+
+- name: Install Python Dependencies
+  package: 
+    state: present
+    name:
+    - python3-openshift
+  become: true
+
 - name: Create OpenShift objects for NFS Provisioner - Part 1
   k8s:
     state: present
@@ -120,7 +133,7 @@
 - name: Patch image registry storage location - NFS
   shell: |
     oc patch configs.imageregistry.operator.openshift.io cluster \
-      --type merge --patch '{"spec":{"storage":{"pvc":{"claim"}}}}'
+      --type merge --patch '{"spec":{"storage":{"pvc":{"claim":""}}}}'
   when: nfs_registry
 
 - name: Patch image registry storage location - Local (POC only)
@@ -325,7 +338,7 @@
       oc adm upgrade --to-latest=true
   - name: Wait for upgrade to begin
     pause:
-      seconds: 10
+      seconds: 20
   - name: Get cluster version info
     shell: |
       oc get clusterversion version -ojson | jq -r '.status.conditions[] | select(.type=="Progressing") | .message'
