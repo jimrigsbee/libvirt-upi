@@ -1,4 +1,11 @@
 ---
+- name: Cleanup Helper VM
+  become: true
+  hosts: helper_vm
+  gather_facts: true
+  roles:
+    - unregister
+
 - name: Destroy Helper Node
   become: true
   hosts: localhost

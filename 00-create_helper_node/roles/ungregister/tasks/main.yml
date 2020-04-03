@@ -1,0 +1,4 @@
+---
+- name: unregister node with subscription-manager
+  redhat_subscription:
+    state: absent
