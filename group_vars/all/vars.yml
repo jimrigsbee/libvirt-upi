@@ -1,5 +1,12 @@
 openshift_version: 4.2
 openshift_z_version: 4.2.18
+rhcos_version: 4.2.18
+rhcos_kernel: rhcos-4.2.18-x86_64-installer-kernel
+rhcos_initramfs: rhcos-4.2.18-x86_64-installer-initramfs.img
+rhcos_biosimg: "rhcos-4.2.18-x86_64-metal-bios.raw.gz"
+rhcos_kernel_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.2/latest/{{ rhcos_kernel }}"
+rhcos_initramfs_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.2/latest/{{ rhcos_initramfs }}"
+rhcos_biosimg_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.2/latest/{{ rhcos_biosimg }}"
 openshift_clusternet: 10.8.0.0/14
 openshift_clusternetprefix: 23
 openshift_servicenet: 172.30.0.0/16
@@ -37,7 +44,7 @@ bastion_vm_vcpu: 2
 bastion_vm_memory_gb: 4
 bastion_vm_hostname_short: utility
 bastion_vm_hostname: "{{bastion_vm_hostname_short}}.{{network_subdomain}}"
-bastion_vm_disk_image: "{{vm_files_path}}/{{bastion_vm_hostname_short}}.qcow2" 
+bastion_vm_disk_image: "{{vm_files_path}}/{{bastion_vm_hostname_short}}.qcow2"
 bastion_vm_cloud_init_iso: "{{vm_files_path}}/{{bastion_vm_hostname_short}}-ci.iso"
 bastion_cloud_user: helper
 

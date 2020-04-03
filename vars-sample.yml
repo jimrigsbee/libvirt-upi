@@ -1,0 +1,12 @@
+rhcos_kernel: rhcos-4.4.0-rc.1-x86_64-installer-kernel-x86_64
+rhcos_initramfs: rhcos-4.4.0-rc.1-x86_64-installer-initramfs.x86_64.img
+rhcos_biosimg: "rhcos-4.4.0-rc.1-x86_64-metal-x86_64.raw.gz"
+rhcos_kernel_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.4/latest/{{ rhcos_kernel }}"
+rhcos_initramfs_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.4/latest/{{ rhcos_initramfs }}"
+rhcos_biosimg_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.4/latest/{{ rhcos_biosimg }}"
+
+rhcos_version: 4.4.0-rc.1
+openshift_version: 4.4
+openshift_z_version: 4.4.0-rc.6
+openshift_upgrade: false
+openshift_smoke_tests: true
