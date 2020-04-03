@@ -7,6 +7,7 @@
    - subscribe
    - install_pkgs
    - configure_firewall
+   - configure_nfs
    - configure_selinux
    - configure_http
    - configure_pxe

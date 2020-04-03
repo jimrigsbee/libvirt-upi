@@ -1,0 +1,29 @@
+---
+- name: Define NFS disk
+  parted:
+    device: /dev/vdb
+    number: 1
+    state: present
+
+- name: Create NFS filesystem
+  filesystem:
+    fstype: xfs
+    dev: /dev/vdb1
+
+- name: Mount NFS filesystem
+  mount:
+    path: /exports
+    src: /dev/vdb1
+    fstype: xfs
+    state: mounted
+
+- name: Create exports
+  template:
+    src: exports.j2
+    dest: /etc/exports
+
+- name: Enable NFS service
+  service:
+    name: nfsd
+    enable: yes
+    state: started

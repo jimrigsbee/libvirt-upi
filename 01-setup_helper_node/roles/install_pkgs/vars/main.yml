@@ -12,6 +12,7 @@ rhel8_pkgs:
   - firewalld
   - git
   - jq
+  - parted
 
 rhel7_pkgs:
   - dhcp
@@ -25,3 +26,4 @@ rhel7_pkgs:
   - bind-utils
   - firewalld
   - git
+  - parted

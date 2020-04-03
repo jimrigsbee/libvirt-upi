@@ -88,10 +88,46 @@
       oc adm certificate approve {{ item }}
   with_items: "{{ csrs.stdout_lines }}"
 
-- name: Patch image registry storage location
+- name: Create OpenShift objects for NFS Provisioner - Part 1
+  k8s:
+    state: present
+    merge_type:
+    - strategic-merge
+    - merge
+    definition: "{{ lookup('template', item ) | from_yaml }}"
+  loop:
+  - ./templates/project.yaml.j2
+  - ./templates/nfs-role.yaml.j2
+  - ./templates/service-account.yaml.j2
+  - ./templates/nfs-role-binding.yaml.j2
+  - ./templates/nfs-local-role.yaml.j2
+  - ./templates/nfs-local-role-binding.yaml.j2
+
+- name: Grant host mount SCC to NFS provisioner
+  command: "oc adm policy add-scc-to-user hostmount-anyuid system:serviceaccount:nfs-client-provisioner:nfs-client-provisioner"
+
+- name: Create OpenShift objects for NFS Provisioner - Part 2
+  k8s:
+    state: present
+    merge_type:
+    - strategic-merge
+    - merge
+    definition: "{{ lookup('template', item ) | from_yaml }}"
+  loop:
+  - ./templates/nfs-provisioner-deployment.yaml.j2
+  - ./templates/storage-class.yaml.j2
+
+- name: Patch image registry storage location - NFS
+  shell: |
+    oc patch configs.imageregistry.operator.openshift.io cluster \
+      --type merge --patch '{"spec":{"storage":{"pvc":{"claim"}}}}'
+  when: nfs_registry
+
+- name: Patch image registry storage location - Local (POC only)
   shell: |
     oc patch configs.imageregistry.operator.openshift.io cluster \
       --type merge --patch '{"spec":{"storage":{"emptyDir":{}}}}'
+  when: not nfs_registry
 
 - name: Wait for install to complete
   shell: |

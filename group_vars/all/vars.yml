@@ -41,6 +41,9 @@ bastion_vm_disk_image: "{{vm_files_path}}/bastion.qcow2"
 bastion_vm_cloud_init_iso: "{{vm_files_path}}/bastion-ci.iso"
 bastion_cloud_user: helper
 
+nfs_server_exports_size: 200G
+nfs_registry: true
+
 rhel_qcow_image: "/images/rhel-8.1-x86_64-kvm.qcow2"
 
 disable_default_repos: false

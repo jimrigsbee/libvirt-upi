@@ -1,0 +1,11 @@
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  annotations:
+    openshift.io/description: ""
+    openshift.io/display-name: "NFS Provisioner"
+    openshift.io/requester: "system:admin"
+  name: "nfs-client-provisioner"
+spec:
+  finalizers:
+  - kubernetes

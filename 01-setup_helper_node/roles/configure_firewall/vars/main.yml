@@ -7,7 +7,8 @@ allowed_services:
     - http
     - https
     - dns
-    
+    - nfs
+
 allowed_ports:
     - 6443/tcp
     - 22623/tcp
