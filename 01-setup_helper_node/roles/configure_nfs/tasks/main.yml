@@ -10,6 +10,14 @@
     fstype: xfs
     dev: /dev/vdb1
 
+- name: Create mount point
+  file:
+    state: directory
+    path: /exports
+    owner: "{{ bastion_cloud_user }}" 
+    group: "{{ bastion_cloud_user }}" 
+    mode: 0755
+    
 - name: Mount NFS filesystem
   mount:
     path: /exports
@@ -24,6 +32,12 @@
 
 - name: Enable NFS service
   service:
-    name: nfsd
-    enable: yes
+    name: nfs-server
+    enabled: yes
+    state: started
+
+- name: Enable RPC service
+  service:
+    name: rpcbind 
+    enabled: yes
     state: started

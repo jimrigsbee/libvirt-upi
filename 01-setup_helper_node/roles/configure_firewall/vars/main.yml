@@ -8,6 +8,9 @@ allowed_services:
     - https
     - dns
     - nfs
+    - nfs3
+    - mountd
+    - rpc-bind
 
 allowed_ports:
     - 6443/tcp

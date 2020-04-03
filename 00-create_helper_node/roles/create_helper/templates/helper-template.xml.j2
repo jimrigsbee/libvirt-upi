@@ -38,7 +38,7 @@
     </disk>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source file='{{ vm_files_path }}/{{ bastion_vm_hostname_short }}-nfs-storage.qcow2 }}'/>
+      <source file='{{ vm_files_path }}/{{ bastion_vm_hostname_short }}-nfs-storage.qcow2'/>
       <target dev='vdb' bus='virtio'/>
       <boot order='2'/>
     </disk>

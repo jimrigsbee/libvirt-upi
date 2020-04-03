@@ -45,11 +45,6 @@
     mv -v {{ bastion_vm_hostname_short }}.new.image {{ bastion_vm_disk_image }}
     qemu-img create -f qcow2 {{ bastion_vm_hostname_short }}-nfs-storage.qcow2 {{ nfs_server_exports_size }}
 
-- name: Ensure correct permission for NFS storage
-  file:
-    path: '{{ vm_files_path }}/{{ bastion_vm_hostname_short }}-nfs-storage.qcow2'
-    mode: u+rw,g-rwx,o-rwx
-    
 - name: Create user-data ISO
   shell: |
     cd /tmp/ci

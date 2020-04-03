@@ -37,8 +37,8 @@ bastion_vm_vcpu: 2
 bastion_vm_memory_gb: 4
 bastion_vm_hostname_short: utility
 bastion_vm_hostname: "{{bastion_vm_hostname_short}}.{{network_subdomain}}"
-bastion_vm_disk_image: "{{vm_files_path}}/bastion.qcow2"
-bastion_vm_cloud_init_iso: "{{vm_files_path}}/bastion-ci.iso"
+bastion_vm_disk_image: "{{vm_files_path}}/{{bastion_vm_hostname_short}}.qcow2" 
+bastion_vm_cloud_init_iso: "{{vm_files_path}}/{{bastion_vm_hostname_short}}-ci.iso"
 bastion_cloud_user: helper
 
 nfs_server_exports_size: 200G
