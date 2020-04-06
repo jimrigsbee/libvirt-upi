@@ -19,5 +19,6 @@ networking:
   - {{ openshift_servicenet }}
 platform:
   none: {}
+fips: false
 pullSecret: '{{ ocp_pull_secret }}'
 sshKey: '{{ sshkeypub.content | b64decode }}'

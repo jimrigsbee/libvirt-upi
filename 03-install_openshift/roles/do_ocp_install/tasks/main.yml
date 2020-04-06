@@ -134,12 +134,16 @@
   shell: |
     oc patch configs.imageregistry.operator.openshift.io cluster \
       --type merge --patch '{"spec":{"storage":{"pvc":{"claim":""}}}}'
+    oc patch configs.imageregistry.operator.openshift.io cluster \
+      --type merge --patch '{"spec":{"managementState":"Managed"}}'
   when: nfs_registry
 
 - name: Patch image registry storage location - Local (POC only)
   shell: |
     oc patch configs.imageregistry.operator.openshift.io cluster \
       --type merge --patch '{"spec":{"storage":{"emptyDir":{}}}}'
+    oc patch configs.imageregistry.operator.openshift.io cluster \
+      --type merge --patch '{"spec":{"managementState":"Managed"}}'
   when: not nfs_registry
 
 - name: Wait for install to complete
