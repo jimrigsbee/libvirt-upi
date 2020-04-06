@@ -108,6 +108,9 @@ defaults
  backend ingress_insecure_backend
    balance roundrobin
    mode tcp
+   {% for vm in groups['ocp4_master_vm'] %}
+      server {{ vm.split('.')[0] }} {{ hostvars[vm].vm_ipaddress }}:80 check
+   {% endfor %}
    {% for vm in groups['ocp4_worker_vm'] %}
       server {{ vm.split('.')[0] }} {{ hostvars[vm].vm_ipaddress }}:80 check
    {% endfor %}
@@ -122,6 +125,9 @@ defaults
  backend ingress_secure_backend
    balance roundrobin
    mode tcp
+   {% for vm in groups['ocp4_master_vm'] %}
+      server {{ vm.split('.')[0] }} {{ hostvars[vm].vm_ipaddress }}:443 check
+   {% endfor %}
    {% for vm in groups['ocp4_worker_vm'] %}
       server {{ vm.split('.')[0] }} {{ hostvars[vm].vm_ipaddress }}:443 check
    {% endfor %}
