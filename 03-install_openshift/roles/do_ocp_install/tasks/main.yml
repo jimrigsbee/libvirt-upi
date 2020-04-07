@@ -79,7 +79,7 @@
 
 - name: Wait for CSRs to get generated
   pause:
-    seconds: 60
+    seconds: 15
 
 - name: Get any CSRs
   shell: |
@@ -87,10 +87,23 @@
       jq -r '.items[] | select(.status == {} ) | .metadata.name'
   register: csrs
 
-- name: Sign CSRs
-  shell: |
-      oc adm certificate approve {{ item }}
-  with_items: "{{ csrs.stdout_lines }}"
+- name: Sign CSR Loop
+  until: csrs.stdout_lines | length == 0
+  delay: 0
+  retries: 5
+  block:
+  - name: Sign CSRs
+    shell: |
+        oc adm certificate approve {{ item }}
+    with_items: "{{ csrs.stdout_lines }}"
+  - name: Pause for more certs to be generated
+    pause:
+      seconds: 15
+  - name: Get any CSRs
+    shell: |
+      oc get csr -ojson | \
+        jq -r '.items[] | select(.status == {} ) | .metadata.name'
+    register: csrs
 
 - name: Wait for install to complete
   shell: |
