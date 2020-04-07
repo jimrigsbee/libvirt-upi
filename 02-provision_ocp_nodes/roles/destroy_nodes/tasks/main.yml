@@ -1,24 +1,13 @@
 ---
 - name: Get VMs
-  command: list_vms
+  virt:
+    command: list_vms
   register: vmlist
   
-- with_items: vmlist.list_vms
+- name: Cleanup VMs 
+  include_tasks: 
+    file: ./delete.yml
+  vars:
+    vm: "{{ item }}" 
+  with_items: "{{ vmlist.list_vms }}"
   when: item != bastion_vm_hostname_short
-  block:
-  - name: Stopping VM
-    virt:
-      state: destroyed
-      name: "{{ item }}"
-    retries: 3
-    delay: 2
-
-  - name: Delete VM
-    virt:
-      command: undefine
-      name: "{{ item }}"
-
-  - name: Cleanup storage
-    file:
-      path: '{{ vm_files_path }}/{{ item }}.qcow2'
-      state: absent
