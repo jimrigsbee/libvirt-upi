@@ -14,10 +14,10 @@
   file:
     state: directory
     path: /exports
-    owner: "{{ bastion_cloud_user }}" 
-    group: "{{ bastion_cloud_user }}" 
-    mode: 0755
-    
+    owner: root
+    group: root
+    mode: 0777
+
 - name: Mount NFS filesystem
   mount:
     path: /exports
@@ -38,6 +38,6 @@
 
 - name: Enable RPC service
   service:
-    name: rpcbind 
+    name: rpcbind
     enabled: yes
     state: started

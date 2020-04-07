@@ -77,6 +77,10 @@
     dest: /root/.kube/config
   become: yes
 
+- name: Wait for CSRs to get generated
+  pause:
+    seconds: 60
+
 - name: Get any CSRs
   shell: |
     oc get csr -ojson | \
@@ -87,6 +91,12 @@
   shell: |
       oc adm certificate approve {{ item }}
   with_items: "{{ csrs.stdout_lines }}"
+
+- name: Wait for install to complete
+  shell: |
+    cd {{ openshift_installer_dir }}
+    /usr/bin/openshift-install wait-for install-complete
+  async: "{{ 35 * 60 }}"
 
 - name: Add epel-release repo
   package:
@@ -145,12 +155,6 @@
     oc patch configs.imageregistry.operator.openshift.io cluster \
       --type merge --patch '{"spec":{"managementState":"Managed"}}'
   when: not nfs_registry
-
-- name: Wait for install to complete
-  shell: |
-    cd {{ openshift_installer_dir }}
-    /usr/bin/openshift-install wait-for install-complete
-  async: "{{ 35 * 60 }}"
 
 # smoke test
 - name: Get API for command line
