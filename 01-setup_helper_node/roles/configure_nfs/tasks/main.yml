@@ -10,20 +10,20 @@
     fstype: xfs
     dev: /dev/vdb1
 
-- name: Create mount point
-  file:
-    state: directory
-    path: /exports
-    owner: root
-    group: root
-    mode: 0777
-
 - name: Mount NFS filesystem
   mount:
     path: /exports
     src: /dev/vdb1
     fstype: xfs
     state: mounted
+
+- name: Set permissions on exports directory
+  file:
+    state: directory
+    path: /exports
+    owner: root
+    group: root
+    mode: 0777
 
 - name: Create exports
   template:
