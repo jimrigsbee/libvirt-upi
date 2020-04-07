@@ -1,20 +1,24 @@
 ---
-- name: Stopping VM
-  delegate_to: localhost
-  virt:
-    command: destroy
-    name: "{{ inventory_hostname }}"
-  ignore_errors: true 
+- name: Get VMs
+  command: list_vms
+  register: vmlist
+  
+- with_items: vmlist.list_vms
+  when: item != bastion_vm_hostname_short
+  block:
+  - name: Stopping VM
+    virt:
+      state: destroyed
+      name: "{{ item }}"
+    retries: 3
+    delay: 2
 
-- name: Undefine VM
-  delegate_to: localhost
-  virt:
-    command: undefine
-    name: "{{ inventory_hostname }}"
-  ignore_errors: true 
+  - name: Delete VM
+    virt:
+      command: undefine
+      name: "{{ item }}"
 
-- name: Cleanup storage
-  delegate_to: localhost
-  file:
-    path: '{{ vm_files_path }}/{{ inventory_hostname }}.qcow2'
-    state: absent
+  - name: Cleanup storage
+    file:
+      path: '{{ vm_files_path }}/{{ item }}.qcow2'
+      state: absent

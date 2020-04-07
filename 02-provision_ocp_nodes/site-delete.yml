@@ -1,7 +1,7 @@
 ---
 - name: Deleting VM on Libvirt
   become: true
-  hosts: ocp4_nodes
+  hosts: localhost
   gather_facts: false
   roles:
     - destroy_nodes
