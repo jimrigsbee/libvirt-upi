@@ -7,6 +7,9 @@
 #   retries: 10
 #   delay: 5
 
+- name: Wait for VM to be ready
+  wait_for_connection:
+    
 - name: register node with subscription-manager
   redhat_subscription:
     state: present
