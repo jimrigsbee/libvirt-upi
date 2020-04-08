@@ -1,12 +1,14 @@
 ---
-- name: Start Cluster VMs
+- name: Start Cluster bastion and master VMs
   delegate_to: localhost
   become: true
   ignore_errors: true
   virt:
     command: start
     name: "{{ item }}"
-  with_items: "{{ groups['ocp4_nodes'] }}"
+  with_items:
+    - "{{ groups['ocp4_bootstrap_vm'] }}"
+    - "{{ groups['ocp4_master_vm'] }}"
 
 - name: Wait for bootstrap to complete
   shell: |
@@ -77,9 +79,28 @@
     dest: /root/.kube/config
   become: yes
 
-- name: Wait for CSRs to get generated
-  pause:
-    seconds: 60
+- name: Start workstation VMs
+  delegate_to: localhost
+  become: true
+  ignore_errors: true
+  virt:
+    command: start
+    name: "{{ item }}"
+  with_items:
+    - "{{ groups['ocp4_worker_vm'] }}"
+
+- name: Wait for workstation machines to finish booting
+  wait_for:
+    host: "{{ hostvars[item].vm_ipaddress }}"
+  with_items: "{{ groups['ocp4_worker_vm'] }}"
+
+- name: Wait for first worker node CSRs to get generated
+  shell: |
+    oc get csr -ojson | jq -r '.items[] | select(.status == {} ) | .metadata.name'
+  register: csrs
+  until: csrs.stdout | int > 0
+  delay: 10
+  retries: 6
 
 - name: Get CSR signing script
   copy:
@@ -156,6 +177,10 @@
       --type merge --patch '{"spec":{"managementState":"Managed"}}'
   when: not nfs_registry
 
+- name: Give private registry time to cycle
+  pause:
+    seconds: 10
+
 - name: Wait on registry to be online after storage change
   shell: |
     oc get co image-registry -ojson | \
@@ -164,7 +189,7 @@
   until: status.stdout == "1"
   delay: 5
   retries: 5
-  
+
 - name: Remove worker designation from masters
   shell: |
     oc patch schedulers.config.openshift.io cluster \
