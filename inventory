@@ -3,8 +3,7 @@ bootstrap.ocp4.example.com
 master01.ocp4.example.com
 master02.ocp4.example.com
 master03.ocp4.example.com
-worker01.ocp4.example.com
-worker02.ocp4.example.com
+# workers dynamically generated
 
 [ocp4_bootstrap_vm]
 bootstrap.ocp4.example.com
@@ -15,8 +14,7 @@ master02.ocp4.example.com
 master03.ocp4.example.com
 
 [ocp4_worker_vm]
-worker01.ocp4.example.com
-worker02.ocp4.example.com
+# dynamically generated
 
 [helper_vm]
 utility.ocp4.example.com ansible_user=helper ansible_ssh_private_key_file=/home/ec2-user/glsdev

@@ -1,0 +1,14 @@
+---
+- name: Add Worker Host
+  add_host:
+    name: "{{ item.name }}.{{ network_subdomain }}"
+    shortname: "{{ item.name }}"
+    groups:
+      - ocp4_nodes
+      - ocp4_worker_vm
+    vm_disksize: "{{ item.disksize }}"
+    vm_macaddress: "{{ item.macaddress }}"
+    vm_ipaddress: "{{ item.ipaddress }}"
+    vm_vcpu: "{{ item.vcpu }}"
+    vm_memory_gb: "{{ item.memory_gb }}"
+  with_items: "{{ workers }}"

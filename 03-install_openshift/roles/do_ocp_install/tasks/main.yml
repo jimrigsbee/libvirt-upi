@@ -266,7 +266,7 @@
     - "user.info: Route ......................... {{ 'OK' if testroute is succeeded else 'FAIL' }}"
 
 - when:
-    - openshift_smoke_tests | bool
+    - openshift_smoke_tests_must_succeed | bool
     - >-
       checkdnswebconsole.rc != 0
       or checkdnsapi.rc != 0
@@ -281,61 +281,70 @@
   ignore_errors: no
 
 # configure htpasswd with optional admin/developer user accounts
+- name: Configure htpasswd authentication
+  when: configure_htpasswd_auth
+  block:
+  - name: Generate htpasswd hash for user_password
+    shell: >-
+      htpasswd -nb "{{ developer_user }}" "{{ developer_password }}" | cut -d: -f2
+    register: htpasswd_line
+    when:
+      - developer_user is defined
 
-- name: Generate htpasswd hash for user_password
-  shell: >-
-    htpasswd -nb "{{ developer_user }}" "{{ developer_password }}" | cut -d: -f2
-  register: htpasswd_line
-  when:
-    - developer_user is defined
+  - name: Set fact user_password_hash
+    set_fact:
+      developer_password_hash: "{{ htpasswd_line.stdout }}"
+    when:
+      - developer_user is defined
+      - htpasswd_line is succeeded
 
-- name: Set fact user_password_hash
-  set_fact:
-    developer_password_hash: "{{ htpasswd_line.stdout }}"
-  when:
-    - developer_user is defined
-    - htpasswd_line is succeeded
+  - name: Generate htpasswd hash for admin user
+    shell: >-
+      htpasswd -nb "{{ admin_user }}" "{{ admin_password }}" | cut -d: -f2
+    register: htpasswd_line
+    when:
+      - admin_user is defined
 
-- name: Generate htpasswd hash for admin user
-  shell: >-
-    htpasswd -nb "{{ admin_user }}" "{{ admin_password }}" | cut -d: -f2
-  register: htpasswd_line
-  when:
-    - admin_user is defined
+  - name: Set fact admin_password_hash
+    set_fact:
+      admin_password_hash: "{{ htpasswd_line.stdout }}"
+    when:
+      - admin_user is defined
+      - htpasswd_line is succeeded
 
-- name: Set fact admin_password_hash
-  set_fact:
-    admin_password_hash: "{{ htpasswd_line.stdout }}"
-  when:
-    - admin_user is defined
-    - htpasswd_line is succeeded
+  - name: Generate htpasswd file
+    template:
+      src: htpasswd.j2
+      dest: "/home/{{ bastion_cloud_user }}/users.htpasswd"
+      owner: "{{ bastion_cloud_user }}"
+      mode: 0664
 
-- name: Generate htpasswd file
-  template:
-    src: htpasswd.j2
-    dest: "/home/{{ bastion_cloud_user }}/users.htpasswd"
-    owner: "{{ bastion_cloud_user }}"
-    mode: 0664
+  - name: Upload OAuth Configuration File
+    template:
+      src: oauth-htpasswd.yaml
+      dest: "/home/{{ bastion_cloud_user }}/oauth-htpasswd.yaml"
+      owner: "{{ bastion_cloud_user }}"
+      mode: 0664
 
-- name: Upload OAuth Configuration File
-  template:
-    src: oauth-htpasswd.yaml
-    dest: "/home/{{ bastion_cloud_user }}/oauth-htpasswd.yaml"
-    owner: "{{ bastion_cloud_user }}"
-    mode: 0664
+  - name: Create htpasswd Secret
+    shell: |
+      oc delete secret htpasswd-secret -n openshift-config
+      oc create secret generic htpasswd-secret -n openshift-config --from-file=htpasswd=/home/{{ bastion_cloud_user }}/users.htpasswd
 
-- name: Create htpasswd Secret
-  shell: |
-    oc delete secret htpasswd-secret -n openshift-config
-    oc create secret generic htpasswd-secret -n openshift-config --from-file=htpasswd=/home/{{ bastion_cloud_user }}/users.htpasswd
-  ignore_errors: true
+  - name: Update OAuth Configuration
+    shell: "oc apply -f /home/{{ bastion_cloud_user }}/oauth-htpasswd.yaml"
 
-- name: Update OAuth Configuration
-  shell: "oc apply -f /home/{{ bastion_cloud_user }}/oauth-htpasswd.yaml"
+  - name: Make admin user a cluster admin
+    shell: "oc adm policy add-cluster-role-to-user cluster-admin {{ admin_user }}"
+    when: admin_user is defined
 
-- name: Make admin user a cluster admin
-  shell: "oc adm policy add-cluster-role-to-user cluster-admin {{ admin_user }}"
-  when: admin_user is defined
+  - name: Cleanup auth files on host
+    file:
+      state: absent
+      path: "/home/{{ bastion_cloud_user }}/{{ item }}"
+    with_items:
+      - oauth-htpasswd.yaml
+      - users.htpasswd
 
 # optionally upgrade cluster
 - name: Upgrade cluster

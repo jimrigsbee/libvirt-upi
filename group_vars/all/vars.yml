@@ -14,7 +14,7 @@ openshift_clustername: ocp4
 openshift_routedomain: apps
 openshift_installer_dir: "/home/{{ bastion_cloud_user }}/{{ openshift_clustername }}"
 openshift_upgrade: false
-openshift_smoke_tests: true
+openshift_smoke_tests_must_succeed: true
 network_domain: example.com
 network_subdomain: "{{ openshift_clustername }}.{{ network_domain }}"
 
@@ -57,3 +57,19 @@ disable_default_repos: false
 rhel_repos:
   - rhel-8-for-x86_64-baseos-rpms
   - rhel-8-for-x86_64-appstream-rpms
+
+workers:
+  - name: "worker01"
+    disksize: 40G
+    macaddress: "52:54:00:7d:2d:14"
+    ipaddress: "192.168.50.150"
+    vcpu: 4
+    memory_gb: 16
+  - name: "worker02"
+    disksize: 40G
+    macaddress: "52:54:00:7d:2d:15"
+    ipaddress: "192.168.50.151"
+    vcpu: 4
+    memory_gb: 16
+
+configure_htpasswd_auth: true

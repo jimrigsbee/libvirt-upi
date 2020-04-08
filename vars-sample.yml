@@ -9,4 +9,6 @@ rhcos_version: 4.4.0-rc.1
 openshift_version: 4.4
 openshift_z_version: 4.4.0-rc.6
 openshift_upgrade: false
-openshift_smoke_tests: true
+openshift_smoke_tests_must_succeed: true
+
+configure_htpasswd_auth: true

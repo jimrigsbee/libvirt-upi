@@ -1,4 +1,11 @@
 ---
+- name: Generate Worker Inventory
+  become: false
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - create_worker_inventory
+
 - name: Preparing and Configuring DHCP and PXE Configs
   become: true
   hosts: helper_vm
