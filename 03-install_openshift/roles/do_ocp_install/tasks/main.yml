@@ -92,11 +92,12 @@
 - name: Wait for workstation machines to finish booting
   wait_for:
     host: "{{ hostvars[item].vm_ipaddress }}"
+    port: 22
   with_items: "{{ groups['ocp4_worker_vm'] }}"
 
 - name: Wait for first worker node CSRs to get generated
   shell: |
-    oc get csr -ojson | jq -r '.items[] | select(.status == {} ) | .metadata.name'
+    oc get csr -ojson | jq -r '.items[] | select(.status == {} ) | .metadata.name' | wc -l
   register: csrs
   until: csrs.stdout | int > 0
   delay: 10
@@ -111,7 +112,7 @@
     mode: 0755
 
 - name: Sign CSRs
-  command: sh sign.sh
+  command: "sh sign.sh {{ workers | length }}"
 
 - name: Wait for install to complete
   shell: |
@@ -179,7 +180,7 @@
 
 - name: Give private registry time to cycle
   pause:
-    seconds: 10
+    seconds: 15
 
 - name: Wait on registry to be online after storage change
   shell: |
@@ -189,6 +190,10 @@
   until: status.stdout == "1"
   delay: 5
   retries: 5
+
+- name: Allow private registry pods to restart
+  pause:
+    seconds: 30
 
 - name: Remove worker designation from masters
   shell: |
