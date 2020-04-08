@@ -95,14 +95,6 @@
     port: 22
   with_items: "{{ groups['ocp4_worker_vm'] }}"
 
-- name: Wait for first worker node CSRs to get generated
-  shell: |
-    oc get csr -ojson | jq -r '.items[] | select(.status == {} ) | .metadata.name' | wc -l
-  register: csrs
-  until: csrs.stdout | int > 0
-  delay: 10
-  retries: 6
-
 - name: Get CSR signing script
   copy:
     src: sign.sh
