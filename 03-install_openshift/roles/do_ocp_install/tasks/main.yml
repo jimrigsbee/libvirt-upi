@@ -156,6 +156,20 @@
       --type merge --patch '{"spec":{"managementState":"Managed"}}'
   when: not nfs_registry
 
+- name: Wait on registry to be online after storage change
+  shell: |
+    oc get co image-registry -ojson | \
+      jq -r '.status.conditions[] | select(.type == "Available") | select(.status|test("True")) | 1'
+  register: status
+  until: status.stdout == "1"
+  delay: 5
+  retries: 5
+  
+- name: Remove worker designation from masters
+  shell: |
+    oc patch schedulers.config.openshift.io cluster \
+      --type merge --patch '{"spec":{"mastersSchedulable":false}}'
+
 # smoke test
 - name: Get API for command line
   command: oc whoami --show-server
