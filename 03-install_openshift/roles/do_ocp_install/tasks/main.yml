@@ -79,7 +79,7 @@
 
 - name: Wait for CSRs to get generated
   pause:
-    seconds: 15
+    seconds: 60
 
 - name: Get CSR signing script
   copy:

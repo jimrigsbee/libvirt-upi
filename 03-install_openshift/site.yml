@@ -1,4 +1,11 @@
 ---
+- name: Generate Worker Inventory
+  become: false
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - create_worker_inventory
+
 - name: Install OpenShift
   become: false
   hosts: helper_vm

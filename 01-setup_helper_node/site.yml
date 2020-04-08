@@ -1,4 +1,12 @@
 ---
+- name: Wait for Helper Host to be ready
+  become: false
+  hosts: helper_vm
+  gather_facts: false
+  tasks:
+  - name: Wait for VM to be ready
+    wait_for_connection:
+
 - name: Configuring Helper Node
   become: true
   hosts: helper_vm

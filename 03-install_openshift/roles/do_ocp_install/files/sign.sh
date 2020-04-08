@@ -8,5 +8,5 @@ do
   for csr in $(oc get csr -ojson | jq -r '.items[] | select(.status == {} ) | .metadata.name'); do
     oc adm certificate approve ${csr}
   done
-  sleep 15
+  sleep 20
 done
