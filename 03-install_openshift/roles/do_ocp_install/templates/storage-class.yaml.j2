@@ -7,3 +7,20 @@ metadata:
 provisioner: nfs-storage
 parameters:
   archiveOnDelete: "false"
+mountOptions:
+- rw
+- relatime
+- vers=3
+- rsize=524288
+- wsize=524288
+- namlen=255
+- hard
+- intr
+- proto=tcp
+- timeo=600
+- retrans=2
+- sec=sys
+- mountvers=3
+- mountport=20048
+- mountproto=tcp
+- local_lock=all
