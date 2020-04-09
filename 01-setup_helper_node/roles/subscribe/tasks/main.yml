@@ -1,34 +1,42 @@
 ---
-- name: register node with subscription-manager
-  redhat_subscription:
-    state: present
-    username: "{{ rhel_subscription_user }}"
-    password: "{{ rhel_subscription_pass }}"
-    autosubscribe: false
-  register: task_result
-  until: task_result is succeeded
-  retries: 10
-  delay: 5
+- name: Subscribe Systems
+  when: subscribe | d(true)
+  block:
+  - name:
+    fail:
+      msg: Subscription Manager secrets are not defined
+    when:
+      - rhel_subscription_pass is not defined or rhel_subscription_user is not defined
+  - name: register node with subscription-manager
+    redhat_subscription:
+      state: present
+      username: "{{ rhel_subscription_user }}"
+      password: "{{ rhel_subscription_pass }}"
+      autosubscribe: false
+    register: task_result
+    until: task_result is succeeded
+    retries: 10
+    delay: 5
 
-- name: get product pool id
-  shell: /usr/bin/subscription-manager list --all --available --matches="*{{rhn_pool_id_string}}*" | awk '/Pool ID/ {print $3}' | head -1
-  register: pool_id
-  until: pool_id is succeeded
-  retries: 10
-  delay: 5
+  - name: get product pool id
+    shell: /usr/bin/subscription-manager list --all --available --matches="*{{rhn_pool_id_string}}*" | awk '/Pool ID/ {print $3}' | head -1
+    register: pool_id
+    until: pool_id is succeeded
+    retries: 10
+    delay: 5
 
-- name: attach host to subscription pool
-  shell: /usr/bin/subscription-manager attach --pool={{ pool_id.stdout }}
-  register: task_result
-  until: task_result.rc == 0
-  retries: 10
-  delay: 5
+  - name: attach host to subscription pool
+    shell: /usr/bin/subscription-manager attach --pool={{ pool_id.stdout }}
+    register: task_result
+    until: task_result.rc == 0
+    retries: 10
+    delay: 5
 
-- name: disable repos for server
-  command: subscription-manager repos --disable "*"
-  when: disable_default_repos | d(false)
+  - name: disable repos for server
+    command: subscription-manager repos --disable "*"
+    when: disable_default_repos | d(false)
 
-- name: enable repos for rhel
-  command: subscription-manager repos --enable "{{ item }}"
-  with_items:
-    - '{{ rhel_repos }}'
+  - name: enable repos for rhel
+    command: subscription-manager repos --enable "{{ item }}"
+    with_items:
+      - '{{ rhel_repos }}'

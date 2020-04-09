@@ -4,5 +4,6 @@
   virt:
     command: define
     xml: "{{ lookup('template','machine-template.xml.j2') }}"
+  when: manage_servers  
   tags:
     - provisioning_libvirt

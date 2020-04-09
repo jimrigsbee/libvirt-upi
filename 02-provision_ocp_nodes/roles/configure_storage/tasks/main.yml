@@ -1,15 +1,18 @@
 ---
-- name: Creating QCOW2 disk
-  delegate_to: localhost
-  shell:
-    cmd: "qemu-img create -f qcow2 {{ vm_files_path }}/{{ inventory_hostname }}.qcow2 {{ vm_disksize }}"
-  tags:
-    - provisioning_libvirt
+- name: Create Storage for servers
+  when: manage_servers
+  block:
+  - name: Creating QCOW2 disk
+    delegate_to: localhost
+    shell:
+      cmd: "qemu-img create -f qcow2 {{ vm_files_path }}/{{ inventory_hostname }}.qcow2 {{ vm_disksize }}"
+    tags:
+      - provisioning_libvirt
 
-- name: Ensure correct permission
-  delegate_to: localhost
-  file:
-    path: '{{ vm_files_path }}/{{ inventory_hostname }}.qcow2'
-    mode: u+rw,g-rwx,o-rwx
-  tags:
-    - provisioning_libvirt
+  - name: Ensure correct permission
+    delegate_to: localhost
+    file:
+      path: '{{ vm_files_path }}/{{ inventory_hostname }}.qcow2'
+      mode: u+rw,g-rwx,o-rwx
+    tags:
+      - provisioning_libvirt

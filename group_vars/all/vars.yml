@@ -53,11 +53,15 @@ nfs_registry: true
 
 rhel_qcow_image: "/images/rhel-8.1-x86_64-kvm.qcow2"
 
+subscribe: true
 disable_default_repos: false
 rhel_repos:
   - rhel-8-for-x86_64-baseos-rpms
   - rhel-8-for-x86_64-appstream-rpms
 
+manage_servers: true
+#libvirt or openstack
+cloud_provider: libvirt
 workers:
   - name: "worker01"
     disksize: 40G

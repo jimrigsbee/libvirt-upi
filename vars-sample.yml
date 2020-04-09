@@ -13,6 +13,10 @@ openshift_smoke_tests_must_succeed: true
 
 configure_htpasswd_auth: true
 
+subscribe: true
+
+manage_servers: true
+cloud_provider: libvirt
 workers:
   - name: "worker01"
     disksize: 40G

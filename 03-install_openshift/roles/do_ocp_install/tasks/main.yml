@@ -9,15 +9,22 @@
   with_items:
     - "{{ groups['ocp4_bootstrap_vm'] }}"
     - "{{ groups['ocp4_master_vm'] }}"
+  when: cloud_provider == 'libvirt'
+  tags:
+    - install_openshift
 
 - name: Wait for bootstrap to complete
   shell: |
     cd {{ openshift_installer_dir }}
     /usr/bin/openshift-install wait-for bootstrap-complete --log-level debug
   async: "{{ 45 * 60 }}"
+  tags:
+    - install_openshift
 
 - name: Remove Bootstrap Infrastructure
   become: true
+  tags:
+    - install_openshift
   block:
   - name: Remove Machine Config bootstrap in LB
     lineinfile:
@@ -33,23 +40,28 @@
     service:
       name: haproxy
       state: restarted
-  - name: Stop bootstrap VM
-    delegate_to: localhost
-    ignore_errors: true
-    virt:
-      command: destroy
-      name: "{{ groups['ocp4_bootstrap_vm'][0] }}"
-  - name: Undefine bootstrap VM
-    delegate_to: localhost
-    ignore_errors: true
-    virt:
-      command: undefine
-      name: "{{ groups['ocp4_bootstrap_vm'][0] }}"
-  - name: Cleanup bootstrap storage
-    delegate_to: localhost
-    file:
-      path: "{{ vm_files_path }}/{{ groups['ocp4_bootstrap_vm'][0] }}.qcow2"
-      state: absent
+  - name: Remove server
+    when:
+      - manage_servers
+      - cloud_provider == 'libvirt'
+    block:
+    - name: Stop bootstrap VM
+      delegate_to: localhost
+      ignore_errors: true
+      virt:
+        command: destroy
+        name: "{{ groups['ocp4_bootstrap_vm'][0] }}"
+    - name: Undefine bootstrap VM
+      delegate_to: localhost
+      ignore_errors: true
+      virt:
+        command: undefine
+        name: "{{ groups['ocp4_bootstrap_vm'][0] }}"
+    - name: Cleanup bootstrap storage
+      delegate_to: localhost
+      file:
+        path: "{{ vm_files_path }}/{{ groups['ocp4_bootstrap_vm'][0] }}.qcow2"
+        state: absent
 
 - name: Make sure .kube directory exists in home directory
   file:
@@ -57,12 +69,16 @@
     path: "/home/{{ bastion_cloud_user }}/.kube"
     owner: "{{ bastion_cloud_user }}"
     mode: 0775
+  tags:
+    - install_openshift
 
 - name: Set up .kube/config
   copy:
     remote_src: yes
     src: "{{ openshift_installer_dir }}/auth/kubeconfig"
     dest: "/home/{{ bastion_cloud_user }}/.kube/config"
+  tags:
+    - install_openshift
 
 - name: Make sure .kube directory exists in /root
   file:
@@ -71,6 +87,8 @@
     owner: root
     mode: 0700
   become: yes
+  tags:
+    - install_openshift
 
 - name: Set up .kube/config for root
   copy:
@@ -78,6 +96,8 @@
     src: "{{ openshift_installer_dir }}/auth/kubeconfig"
     dest: /root/.kube/config
   become: yes
+  tags:
+    - install_openshift
 
 - name: Start workstation VMs
   delegate_to: localhost
@@ -88,12 +108,17 @@
     name: "{{ item }}"
   with_items:
     - "{{ groups['ocp4_worker_vm'] }}"
+  when: cloud_provider == 'libvirt'
+  tags:
+    - install_openshift
 
 - name: Wait for workstation machines to finish booting
   wait_for:
     host: "{{ hostvars[item].vm_ipaddress }}"
     port: 22
   with_items: "{{ groups['ocp4_worker_vm'] }}"
+  tags:
+    - install_openshift
 
 - name: Get CSR signing script
   copy:
@@ -102,21 +127,29 @@
     owner: "{{ bastion_cloud_user }}"
     group: "{{ bastion_cloud_user }}"
     mode: 0755
+  tags:
+    - install_openshift
 
 - name: Sign CSRs
   command: "sh sign.sh {{ workers | length }}"
+  tags:
+    - install_openshift
 
 - name: Wait for install to complete
   shell: |
     cd {{ openshift_installer_dir }}
     /usr/bin/openshift-install wait-for install-complete
   async: "{{ 35 * 60 }}"
+  tags:
+    - install_openshift
 
 - name: Add epel-release repo
   package:
     state: present
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
   become: true
+  tags:
+    - install_nfs_provisioner
 
 - name: Install Python Dependencies
   package:
@@ -124,6 +157,8 @@
     name:
     - python3-openshift
   become: true
+  tags:
+    - install_nfs_provisioner
 
 - name: Create OpenShift objects for NFS Provisioner - Part 1
   k8s:
@@ -139,9 +174,13 @@
   - ./templates/nfs-role-binding.yaml.j2
   - ./templates/nfs-local-role.yaml.j2
   - ./templates/nfs-local-role-binding.yaml.j2
+  tags:
+    - install_nfs_provisioner
 
 - name: Grant host mount SCC to NFS provisioner
   command: "oc adm policy add-scc-to-user hostmount-anyuid system:serviceaccount:nfs-client-provisioner:nfs-client-provisioner"
+  tags:
+    - install_nfs_provisioner
 
 - name: Create OpenShift objects for NFS Provisioner - Part 2
   k8s:
@@ -153,6 +192,8 @@
   loop:
   - ./templates/nfs-provisioner-deployment.yaml.j2
   - ./templates/storage-class.yaml.j2
+  tags:
+    - install_nfs_provisioner
 
 - name: Patch image registry storage location - NFS
   shell: |
@@ -161,6 +202,8 @@
     oc patch configs.imageregistry.operator.openshift.io cluster \
       --type merge --patch '{"spec":{"managementState":"Managed"}}'
   when: nfs_registry
+  tags:
+    - configure_registry
 
 - name: Patch image registry storage location - Local (POC only)
   shell: |
@@ -169,10 +212,14 @@
     oc patch configs.imageregistry.operator.openshift.io cluster \
       --type merge --patch '{"spec":{"managementState":"Managed"}}'
   when: not nfs_registry
+  tags:
+    - configure_registry
 
 - name: Give private registry time to cycle
   pause:
     seconds: 15
+  tags:
+    - configure_registry
 
 - name: Wait on registry to be online after storage change
   shell: |
@@ -182,10 +229,14 @@
   until: status.stdout == "1"
   delay: 5
   retries: 5
+  tags:
+    - configure_registry
 
 - name: Allow private registry pods to restart
   pause:
     seconds: 30
+  tags:
+    - configure_registry
 
 - name: Remove worker designation from masters
   shell: |
@@ -193,132 +244,138 @@
       --type merge --patch '{"spec":{"mastersSchedulable":false}}'
 
 # smoke test
-- name: Get API for command line
-  command: oc whoami --show-server
-  register: showserver
-
-- name: Discover web console URI
-  when: webconsole is not defined
+- name: Run smoke test
+  tags:
+    - smoke_test
   block:
-    - name: Get console route
-      command: oc get route -n openshift-console console -o json
-      register: routeconsole
-      retries: 10
-      delay: 30
-      until: routeconsole is succeeded
-      ignore_errors: yes
+  - name: Get API for command line
+    command: oc whoami --show-server
+    register: showserver
 
-    - name: Set webconsole address
-      set_fact:
-        webconsole: "http://{{ routeconsole.stdout | from_json | json_query('spec.host') }}"
-      when: routeconsole is succeeded
+  - name: Discover web console URI
+    when: webconsole is not defined
+    block:
+      - name: Get console route
+        command: oc get route -n openshift-console console -o json
+        register: routeconsole
+        retries: 10
+        delay: 30
+        until: routeconsole is succeeded
+        ignore_errors: yes
 
-- name: Check DNS webconsole
-  command: nslookup "{{ webconsole | urlsplit('hostname') }}"
-  register: checkdnswebconsole
-  changed_when: false
-  retries: 15
-  until: checkdnswebconsole is succeeded
-  delay: 30
+      - name: Set webconsole address
+        set_fact:
+          webconsole: "http://{{ routeconsole.stdout | from_json | json_query('spec.host') }}"
+        when: routeconsole is succeeded
 
-- name: Check DNS API
-  command: nslookup "{{ showserver.stdout | trim | urlsplit('hostname') }}"
-  register: checkdnsapi
-  changed_when: false
+  - name: Check DNS webconsole
+    command: nslookup "{{ webconsole | urlsplit('hostname') }}"
+    register: checkdnswebconsole
+    changed_when: false
+    retries: 15
+    until: checkdnswebconsole is succeeded
+    delay: 30
 
-- name: Webconsole
-  uri:
-    url: "{{ webconsole }}"
-    validate_certs: no
-  register: testwebconsole
-  retries: 5
-  until: testwebconsole is succeeded
-  delay: 60
+  - name: Check DNS API
+    command: nslookup "{{ showserver.stdout | trim | urlsplit('hostname') }}"
+    register: checkdnsapi
+    changed_when: false
 
-- name: Cluster-info
-  command: oc cluster-info
-  register: clusterinfor
-  changed_when: false
+  - name: Webconsole
+    uri:
+      url: "{{ webconsole }}"
+      validate_certs: no
+    register: testwebconsole
+    retries: 5
+    until: testwebconsole is succeeded
+    delay: 60
 
-- name: Create project
-  command: oc new-project postflightcheck
-  register: newproject
+  - name: Cluster-info
+    command: oc cluster-info
+    register: clusterinfor
+    changed_when: false
 
-- name: New-app
-  command: oc new-app cakephp-mysql-persistent -n postflightcheck
-  register: newapp
+  - name: Create project
+    command: oc new-project postflightcheck
+    register: newproject
 
-- name: Wait for mysql
-  command: timeout 300 oc rollout status dc/mysql -w -n postflightcheck
-  register: mysqlw
-  changed_when: false
+  - name: New-app
+    command: oc new-app cakephp-mysql-persistent -n postflightcheck
+    register: newapp
 
-- name: Wait for php
-  command: timeout 300 oc rollout status dc/cakephp-mysql-persistent -w -n postflightcheck
-  register: phpw
-  changed_when: false
-  retries: 2
-  delay: 60
-  until: phpw is succeeded
+  - name: Wait for mysql
+    command: timeout 300 oc rollout status dc/mysql -w -n postflightcheck
+    register: mysqlw
+    changed_when: false
 
-- name: Get route
-  command: >-
-    oc get route
-    -l template=cakephp-mysql-persistent
-    --no-headers
-    -o json
-    -n postflightcheck
-  register: getroute
-  changed_when: false
-  retries: 10
-  delay: 5
-  until: getroute is succeeded
+  - name: Wait for php
+    command: timeout 300 oc rollout status dc/cakephp-mysql-persistent -w -n postflightcheck
+    register: phpw
+    changed_when: false
+    retries: 2
+    delay: 60
+    until: phpw is succeeded
 
-- name: Test that route is reachable
-  uri:
-    url: "http://{{ getroute.stdout|from_json|json_query('items[0].spec.host') }}"
-  register: testroute
-  retries: 15
-  delay: 5
-  until: testroute is succeeded
+  - name: Get route
+    command: >-
+      oc get route
+      -l template=cakephp-mysql-persistent
+      --no-headers
+      -o json
+      -n postflightcheck
+    register: getroute
+    changed_when: false
+    retries: 10
+    delay: 5
+    until: getroute is succeeded
 
-- name: Delete project
-  command: oc delete project postflightcheck
+  - name: Test that route is reachable
+    uri:
+      url: "http://{{ getroute.stdout|from_json|json_query('items[0].spec.host') }}"
+    register: testroute
+    retries: 15
+    delay: 5
+    until: testroute is succeeded
 
-- name: Switch back to default project
-  command: oc project default
+  - name: Delete project
+    command: oc delete project postflightcheck
 
-- debug:
-    msg: "{{ item }}"
-  loop:
-    - "user.info: "
-    - "user.info: Post Flight Check"
-    - "user.info: DNS Web Console ............... {{ 'OK' if checkdnswebconsole.rc == 0 else 'FAIL' }}"
-    - "user.info: DNS API ....................... {{ 'OK' if checkdnsapi.rc == 0 else 'FAIL' }}"
-    - "user.info: Web console ................... {{ 'OK' if testwebconsole is succeeded else 'FAIL' }}"
-    - "user.info: API ........................... {{ 'OK' if clusterinfor.rc == 0 else 'FAIL' }}"
-    - "user.info: Create Project with PV ........ {{ 'OK' if newproject.rc == 0 else 'FAIL' }}"
-    - "user.info: App deployed .................. {{ 'OK' if phpw.rc == 0 and mysqlw.rc == 0 else 'FAIL' }}"
-    - "user.info: Route ......................... {{ 'OK' if testroute is succeeded else 'FAIL' }}"
+  - name: Switch back to default project
+    command: oc project default
 
-- when:
-    - openshift_smoke_tests_must_succeed | bool
-    - >-
-      checkdnswebconsole.rc != 0
-      or checkdnsapi.rc != 0
-      or testwebconsole is failed
-      or clusterinfor.rc != 0
-      or newproject.rc != 0
-      or phpw.rc != 0
-      or mysqlw.rc != 0
-      or testroute is failed
-  fail:
-    msg: "FAIL Smoke tests"
-  ignore_errors: no
+  - debug:
+      msg: "{{ item }}"
+    loop:
+      - "user.info: "
+      - "user.info: Post Flight Check"
+      - "user.info: DNS Web Console ............... {{ 'OK' if checkdnswebconsole.rc == 0 else 'FAIL' }}"
+      - "user.info: DNS API ....................... {{ 'OK' if checkdnsapi.rc == 0 else 'FAIL' }}"
+      - "user.info: Web console ................... {{ 'OK' if testwebconsole is succeeded else 'FAIL' }}"
+      - "user.info: API ........................... {{ 'OK' if clusterinfor.rc == 0 else 'FAIL' }}"
+      - "user.info: Create Project with PV ........ {{ 'OK' if newproject.rc == 0 else 'FAIL' }}"
+      - "user.info: App deployed .................. {{ 'OK' if phpw.rc == 0 and mysqlw.rc == 0 else 'FAIL' }}"
+      - "user.info: Route ......................... {{ 'OK' if testroute is succeeded else 'FAIL' }}"
+
+  - when:
+      - openshift_smoke_tests_must_succeed | bool
+      - >-
+        checkdnswebconsole.rc != 0
+        or checkdnsapi.rc != 0
+        or testwebconsole is failed
+        or clusterinfor.rc != 0
+        or newproject.rc != 0
+        or phpw.rc != 0
+        or mysqlw.rc != 0
+        or testroute is failed
+    fail:
+      msg: "FAIL Smoke tests"
+    ignore_errors: no
 
 # configure htpasswd with optional admin/developer user accounts
 - name: Configure htpasswd authentication
   when: configure_htpasswd_auth
+  tags:
+    - configure_authentication
   block:
   - name: Generate htpasswd hash for user_password
     shell: >-
@@ -385,6 +442,8 @@
 # optionally upgrade cluster
 - name: Upgrade cluster
   when: openshift_upgrade
+  tags:
+    - upgrade_cluster
   block:
   - name: Upgrade cluster if available
     shell: |
