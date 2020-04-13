@@ -73,6 +73,7 @@ resources:
       gateway_ip:
       enable_dhcp: False
       dns_nameservers:
+      - 192.168.0.100
       - 8.8.8.8
 
   Router0_router:
@@ -173,96 +174,81 @@ resources:
           get_resource: student_subnet
         ip_address: 172.25.250.10
 
+  utility-1_port:
+    type: OS::Neutron::Port
+    properties:
+      name: utility-port-1
+      network:
+        get_resource: dhcp_network
+      mac_address: 52:54:00:01:FA:0A
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: dhcp_subnet
+        ip_address: 192.168.0.100
+
   bootstrap-0_port:
     type: OS::Neutron::Port
     properties:
       name: bootstrap-port-0
       network:
-        get_resource: student_network
+        get_resource: dhcp_network
       mac_address: 52:54:00:00:FA:0B
       port_security_enabled: false
-      fixed_ips:
-      - subnet:
-          get_resource: student_subnet
-        ip_address: 172.25.250.11
 
   master1-0_port:
     type: OS::Neutron::Port
     properties:
       name: master1-port-0
       network:
-        get_resource: student_network
+        get_resource: dhcp_network
       mac_address: 52:54:00:00:FA:0C
       port_security_enabled: false
-      fixed_ips:
-      - subnet:
-          get_resource: student_subnet
-        ip_address: 172.25.250.12
 
   master2-0_port:
     type: OS::Neutron::Port
     properties:
       name: master2-port-0
       network:
-        get_resource: student_network
+        get_resource: dhcp_network
       mac_address: 52:54:00:00:FA:0D
       port_security_enabled: false
-      fixed_ips:
-      - subnet:
-          get_resource: student_subnet
-        ip_address: 172.25.250.13
 
   master3-0_port:
     type: OS::Neutron::Port
     properties:
       name: master3-port-0
       network:
-        get_resource: student_network
+        get_resource: dhcp_network
       mac_address: 52:54:00:00:FA:0E
       port_security_enabled: false
-      fixed_ips:
-      - subnet:
-          get_resource: student_subnet
-        ip_address: 172.25.250.14
 
   worker1-0_port:
     type: OS::Neutron::Port
     properties:
       name: worker1-port-0
       network:
-        get_resource: student_network
+        get_resource: dhcp_network
       mac_address: 52:54:00:00:FA:0F
       port_security_enabled: false
-      fixed_ips:
-      - subnet:
-          get_resource: student_subnet
-        ip_address: 172.25.250.15
 
   worker2-0_port:
     type: OS::Neutron::Port
     properties:
       name: worker2-port-0
       network:
-        get_resource: student_network
+        get_resource: dhcp_network
       mac_address: 52:54:00:00:FA:16
       port_security_enabled: false
-      fixed_ips:
-      - subnet:
-          get_resource: student_subnet
-        ip_address: 172.25.250.16
 
   worker3-0_port:
     type: OS::Neutron::Port
     properties:
       name: worker3-port-0
       network:
-        get_resource: student_network
+        get_resource: dhcp_network
       mac_address: 52:54:00:00:FA:17
       port_security_enabled: false
-      fixed_ips:
-      - subnet:
-          get_resource: student_subnet
-        ip_address: 172.25.250.17
 
   fip_classroom:
     type: OS::Neutron::FloatingIP
@@ -454,6 +440,8 @@ resources:
       networks:
       - port:
           get_resource: utility-0_port
+      - port:
+          get_resource: utility-1_port
       block_device_mapping_v2:
       - volume_id:
           get_resource: utility_volume_vda
