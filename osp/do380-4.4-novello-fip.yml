@@ -1,0 +1,575 @@
+heat_template_version: 2016-10-14
+description: RH380-20200413-8.1
+
+resources:
+
+  classroom_network:
+    type: OS::Neutron::Net
+    properties:
+      name: classroom_network
+      shared: false
+
+  student_network:
+    type: OS::Neutron::Net
+    properties:
+      name: student_network
+      shared: false
+
+  external_network:
+    type: OS::Neutron::Net
+    properties:
+      name: external_network
+      shared: false
+
+  dhcp_network:
+    type: OS::Neutron::Net
+    properties:
+      name: dhcp_network
+      shared: false
+
+  classroom_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name: classroom_subnet
+      network_id:
+        get_resource: classroom_network
+      cidr: 172.25.252.0/24
+      gateway_ip:
+      enable_dhcp: False
+      dns_nameservers:
+      - 8.8.8.8
+
+  student_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name: student_subnet
+      network_id:
+        get_resource: student_network
+      cidr: 172.25.250.0/24
+      gateway_ip:
+      enable_dhcp: False
+      dns_nameservers:
+      - 8.8.8.8
+
+  external_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name: external_subnet
+      network_id:
+        get_resource: external_network
+      cidr: 10.1.0.0/16
+      gateway_ip: 10.1.0.2
+      enable_dhcp: False
+      dns_nameservers:
+      - 8.8.8.8
+
+  dhcp_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name: dhcp_subnet
+      network_id:
+        get_resource: dhcp_network
+      cidr: 192.168.0.0/24
+      gateway_ip:
+      enable_dhcp: False
+      dns_nameservers:
+      - 8.8.8.8
+
+  Router0_router:
+    type: OS::Neutron::Router
+    properties:
+      name: "Router0"
+      external_gateway_info:
+        network: "provider-network"
+
+  Router0_external_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: external_network }
+      fixed_ips:
+        - ip_address: 10.1.0.2
+
+  Router0_router_private_interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+        router: { get_resource: Router0_router }
+        port: { get_resource: Router0_external_port }
+
+  classroom-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: classroom-port-0
+      network:
+        get_resource: classroom_network
+      mac_address: 52:54:00:00:00:fe
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: classroom_subnet
+        ip_address: 172.25.252.254
+
+  classroom-1_port:
+    type: OS::Neutron::Port
+    properties:
+      name: classroom-port-1
+      network:
+        get_resource: external_network
+      mac_address: 52:54:00:01:00:fe
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: external_subnet
+        ip_address: 10.1.1.11
+
+  bastion-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: bastion-port-0
+      network:
+        get_resource: student_network
+      mac_address: 52:54:00:00:FA:FE
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: student_subnet
+        ip_address: 172.25.250.254
+
+  bastion-1_port:
+    type: OS::Neutron::Port
+    properties:
+      name: bastion-port-1
+      network:
+        get_resource: classroom_network
+      mac_address: 52:54:00:01:FC:01
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: classroom_subnet
+        ip_address: 172.25.252.1
+
+  workstation-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: workstation-port-0
+      network:
+        get_resource: student_network
+      mac_address: 52:54:00:00:FA:09
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: student_subnet
+        ip_address: 172.25.250.9
+
+  utility-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: utility-port-0
+      network:
+        get_resource: student_network
+      mac_address: 52:54:00:00:FA:0A
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: student_subnet
+        ip_address: 172.25.250.10
+
+  bootstrap-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: bootstrap-port-0
+      network:
+        get_resource: student_network
+      mac_address: 52:54:00:00:FA:0B
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: student_subnet
+        ip_address: 172.25.250.11
+
+  master1-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: master1-port-0
+      network:
+        get_resource: student_network
+      mac_address: 52:54:00:00:FA:0C
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: student_subnet
+        ip_address: 172.25.250.12
+
+  master2-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: master2-port-0
+      network:
+        get_resource: student_network
+      mac_address: 52:54:00:00:FA:0D
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: student_subnet
+        ip_address: 172.25.250.13
+
+  master3-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: master3-port-0
+      network:
+        get_resource: student_network
+      mac_address: 52:54:00:00:FA:0E
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: student_subnet
+        ip_address: 172.25.250.14
+
+  worker1-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: worker1-port-0
+      network:
+        get_resource: student_network
+      mac_address: 52:54:00:00:FA:0F
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: student_subnet
+        ip_address: 172.25.250.15
+
+  worker2-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: worker2-port-0
+      network:
+        get_resource: student_network
+      mac_address: 52:54:00:00:FA:16
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: student_subnet
+        ip_address: 172.25.250.16
+
+  worker3-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: worker3-port-0
+      network:
+        get_resource: student_network
+      mac_address: 52:54:00:00:FA:17
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: student_subnet
+        ip_address: 172.25.250.17
+
+  fip_classroom:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: provider-network
+    depends_on:
+      - Router0_router_private_interface
+
+  fip_association_classroom:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: {get_resource: fip_classroom}
+      port_id: {get_resource: classroom-1_port}
+
+  classroom_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: classroom-vda
+      image: classroom-vda-50G-8.1-20200317-RH358
+      size: 50
+
+  classroom_volume_hda:
+    type: OS::Cinder::Volume
+    properties:
+      name: classroom-hda
+      image: rhel-8.1-x86_64-dvd
+      size: '8'
+
+  classroom_volume_hdb:
+    type: OS::Cinder::Volume
+    properties:
+      name: classroom-hdb
+      image: rhel-8.1-x86_64-additional-20200311
+      size: '4'
+
+  bastion_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: bastion-vda
+      image: rhel-bastion-vda-10G-8.1-20200316
+      size: 10
+
+  workstation_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: workstation-vda
+      image: rhel-workstation-vda-10G-8.1-20200316
+      size: 10
+
+  utility_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: utility-vda
+      image: rhel-server-vda-10G-8.1-20200316
+      size: 10
+
+  utility_volume_vdb:
+    type: OS::Cinder::Volume
+    properties:
+      name: utility-vdb
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  bootstrap_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: bootstrap-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  master1_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: master1-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  master2_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: master2-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  master3_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: master3-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  worker1_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: worker1-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  worker2_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: worker2-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  worker3_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: worker3-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  affinity_group:
+   type: OS::Nova::ServerGroup
+   properties:
+    name: affinity_group
+    policies:
+     - affinity
+
+  classroom_server:
+    type: OS::Nova::Server
+    properties:
+      name: classroom
+      flavor: CPU_1_Memory_1024_Disk_50
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: classroom-0_port
+      - port:
+          get_resource: classroom-1_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: classroom_volume_vda
+        boot_index: 0
+      - volume_id:
+          get_resource: classroom_volume_hda
+        device_type: cdrom
+        disk_bus: ide
+        boot_index: 1
+      - volume_id:
+          get_resource: classroom_volume_hdb
+        device_type: cdrom
+        disk_bus: ide
+        boot_index: 2
+
+  bastion_server:
+    type: OS::Nova::Server
+    depends_on: classroom_server
+    properties:
+      name: bastion
+      flavor: CPU_1_Memory_1024_Disk_10
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: bastion-0_port
+      - port:
+          get_resource: bastion-1_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: bastion_volume_vda
+        boot_index: 0
+
+  workstation_server:
+    type: OS::Nova::Server
+    depends_on: classroom_server
+    properties:
+      name: workstation
+      flavor: CPU_2_Memory_2048_Disk_10
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: workstation-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: workstation_volume_vda
+        boot_index: 0
+
+  utility_server:
+    type: OS::Nova::Server
+    depends_on: workstation_server
+    properties:
+      name: servera
+      flavor: CPU_2_Memory_2048_Disk_10
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: utility-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: utility_volume_vda
+        boot_index: 0
+      - volume_id:
+          get_resource: utility_volume_vdb
+        boot_index: -1
+
+  bootstrap_server:
+    type: OS::Nova::Server
+    depends_on: workstation_server
+    properties:
+      name: bootstrap
+      flavor: CPU_4_Memory_8192_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: bootstrap-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: bootstrap_volume_vda
+        boot_index: 0
+
+  master1_server:
+    type: OS::Nova::Server
+    depends_on: workstation_server
+    properties:
+      name: master1
+      flavor: CPU_4_Memory_16384_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: master1-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: master1_volume_vda
+        boot_index: 0
+
+  master2_server:
+    type: OS::Nova::Server
+    depends_on: workstation_server
+    properties:
+      name: master2
+      flavor: CPU_4_Memory_16384_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: master2-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: master2_volume_vda
+        boot_index: 0
+
+  master3_server:
+    type: OS::Nova::Server
+    depends_on: workstation_server
+    properties:
+      name: master3
+      flavor: CPU_4_Memory_16384_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: master3-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: master3_volume_vda
+        boot_index: 0
+
+  worker1_server:
+    type: OS::Nova::Server
+    depends_on: workstation_server
+    properties:
+      name: worker1
+      flavor: CPU_4_Memory_8192_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: worker1-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: worker1_volume_vda
+        boot_index: 0
+
+  worker2_server:
+    type: OS::Nova::Server
+    depends_on: workstation_server
+    properties:
+      name: worker2
+      flavor: CPU_4_Memory_8192_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: worker2-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: worker2_volume_vda
+        boot_index: 0
+
+  worker3_server:
+    type: OS::Nova::Server
+    depends_on: workstation_server
+    properties:
+      name: worker3
+      flavor: CPU_4_Memory_8192_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: worker3-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: worker3_volume_vda
+        boot_index: 0
