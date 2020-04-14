@@ -186,6 +186,14 @@ resources:
           get_resource: dhcp_subnet
         ip_address: 192.168.50.254
 
+  utility-2_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: external_network }
+      port_security_enabled: false
+    depends_on:
+      - Router0_router_private_interface
+
   # bootstrap-0_port:
   #   type: OS::Neutron::Port
   #   properties:
@@ -462,6 +470,8 @@ resources:
           get_resource: utility-0_port
       - port:
           get_resource: utility-1_port
+      - port:
+          get_resource: utility-2_port    
       block_device_mapping_v2:
       - boot_index: 0
         delete_on_termination: true
