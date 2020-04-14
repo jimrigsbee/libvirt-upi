@@ -16,7 +16,7 @@ configure_htpasswd_auth: true
 subscribe: false
 
 bastion_cloud_user: student
-bastion_vm_ipaddress: "192.168.50.1"
+bastion_vm_ipaddress: "192.168.50.2"
 vm_ssh_key: /home/student/.ssh/id_rsa.pub
 vm_ssh_private_key: id_rsa
 vm_ssh_private_key_location: /home/student/.ssh/id_rsa

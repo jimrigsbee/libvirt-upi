@@ -73,7 +73,7 @@ resources:
       gateway_ip:
       enable_dhcp: False
       dns_nameservers:
-      - 192.168.50.1
+      - 192.168.50.2
       - 8.8.8.8
 
   Router0_router:
@@ -180,12 +180,12 @@ resources:
       name: utility-port-1
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:01
+      mac_address: 52:54:00:00:32:02
       port_security_enabled: false
       fixed_ips:
       - subnet:
           get_resource: dhcp_subnet
-        ip_address: 192.168.50.1
+        ip_address: 192.168.50.2
 
   bootstrap-0_port:
     type: OS::Neutron::Port
@@ -465,7 +465,7 @@ resources:
             - nmcli con mod $(cat /tmp/NIC2) connection.autoconnect yes
             - nmcli con mod $(cat /tmp/NIC2) ipv4.ignore-auto-dns yes
             - nmcli con mod $(cat /tmp/NIC2) ipv6.ignore-auto-dns yes
-            - nmcli con mod $(cat /tmp/NIC2) ipv4.addresses 192.168.50.1/24
+            - nmcli con mod $(cat /tmp/NIC2) ipv4.addresses 192.168.50.2/24
             - nmcli con mod $(cat /tmp/NIC2) ipv4.method static
             - nmcli con reload
             - nmcli con up $(cat /tmp/NIC1)
