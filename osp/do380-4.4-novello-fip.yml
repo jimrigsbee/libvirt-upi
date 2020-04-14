@@ -59,7 +59,10 @@ resources:
         get_resource: external_network
       cidr: 10.1.0.0/16
       gateway_ip: 10.1.0.2
-      enable_dhcp: False
+      allocation_pools:
+        - start: 10.1.0.10
+          end: 10.1.0.50
+      enable_dhcp: true
       dns_nameservers:
       - 8.8.8.8
 
@@ -471,7 +474,7 @@ resources:
       - port:
           get_resource: utility-1_port
       - port:
-          get_resource: utility-2_port    
+          get_resource: utility-2_port
       block_device_mapping_v2:
       - boot_index: 0
         delete_on_termination: true
