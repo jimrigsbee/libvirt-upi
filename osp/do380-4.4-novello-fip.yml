@@ -197,6 +197,14 @@ resources:
     depends_on:
       - Router0_router_private_interface
 
+  utility-3_port:
+    type: OS::Neutron::Port
+    properties:
+      network: builder_network
+      mac_address: "52:54:00:30:32:fe"
+      fixed_ips:
+        - ip_address: 10.30.0.7
+
   # bootstrap-0_port:
   #   type: OS::Neutron::Port
   #   properties:
@@ -475,6 +483,8 @@ resources:
           get_resource: utility-1_port
       - port:
           get_resource: utility-2_port
+      - port:
+          get_resource: utility-3_port
       block_device_mapping_v2:
       - boot_index: 0
         delete_on_termination: true
@@ -491,25 +501,26 @@ resources:
           - echo -e '172.25.254.254\tcontent.example.com content' >> /etc/hosts
           - echo -e '172.25.254.254\tmaterials.example.com materials' >> /etc/hosts
           - echo -e '10.30.0.5\tprovision.example.com provision' >> /etc/hosts
-          - echo $(ip a | grep '^2:' | cut -d':' -f2) > /tmp/NIC1
-          - echo $(ip a | grep '^3:' | cut -d':' -f2) > /tmp/NIC2
-          - nmcli con mod $(cat /tmp/NIC1) connection.autoconnect yes
-          - nmcli con mod $(cat /tmp/NIC1) ipv4.ignore-auto-dns yes
-          - nmcli con mod $(cat /tmp/NIC1) ipv6.ignore-auto-dns yes
-          - nmcli con mod $(cat /tmp/NIC1) ipv4.addresses 172.25.250.253/24
-          - nmcli con mod $(cat /tmp/NIC1) ipv4.method static
-          - nmcli con mod $(cat /tmp/NIC1) ipv4.gateway 172.25.250.254
-          - nmcli con mod $(cat /tmp/NIC1) ipv4.dns 172.25.250.254
-          - nmcli con mod $(cat /tmp/NIC1) ipv4.dns-search lab.example.com,example.com
-          #- nmcli con mod $(cat /tmp/NIC1) connection.zone trusted
-          - nmcli con mod $(cat /tmp/NIC2) connection.autoconnect yes
-          - nmcli con mod $(cat /tmp/NIC2) ipv4.ignore-auto-dns yes
-          - nmcli con mod $(cat /tmp/NIC2) ipv6.ignore-auto-dns yes
-          - nmcli con mod $(cat /tmp/NIC2) ipv4.addresses 192.168.50.254/24
-          - nmcli con mod $(cat /tmp/NIC2) ipv4.method static
+          - echo "System$(ip a | grep '^2:' | cut -d':' -f2)" > /tmp/NIC1
+          - echo "System$(ip a | grep '^3:' | cut -d':' -f2)" > /tmp/NIC2
+          - nmcli con mod "$(cat /tmp/NIC1)" connection.autoconnect yes
+          - nmcli con mod "$(cat /tmp/NIC1)" ipv4.ignore-auto-dns yes
+          - nmcli con mod "$(cat /tmp/NIC1)" ipv6.ignore-auto-dns yes
+          - nmcli con mod "$(cat /tmp/NIC1)" ipv4.addresses 172.25.250.253/24
+          - nmcli con mod "$(cat /tmp/NIC1)" ipv4.method static
+          - nmcli con mod "$(cat /tmp/NIC1)" ipv4.gateway 172.25.250.254
+          - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns 172.25.250.254
+          - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns-search lab.example.com,example.com
+          #- nmcli con mod "$(cat /tmp/NIC1)" connection.zone trusted
+          - nmcli con mod "$(cat /tmp/NIC2)" connection.autoconnect yes
+          - nmcli con mod "$(cat /tmp/NIC2)" ipv4.ignore-auto-dns yes
+          - nmcli con mod "$(cat /tmp/NIC2)" ipv6.ignore-auto-dns yes
+          - nmcli con mod "$(cat /tmp/NIC2)" ipv4.addresses 192.168.50.254/24
+          - nmcli con mod "$(cat /tmp/NIC2)" ipv4.method static
           - nmcli con reload
-          - nmcli con up $(cat /tmp/NIC1)
-          - nmcli con up $(cat /tmp/NIC2)
+          - nmcli con up "$(cat /tmp/NIC1)"
+          - nmcli con up "$(cat /tmp/NIC2)"
+          - route add -net 172.25.254.0 netmask 255.255.255.0 gw 172.25.250.254 dev eth0
           - echo $(sed -e 's/.*release //' -e 's/ .*//' /etc/redhat-release) > /tmp/rht-release
           #- echo -e "RHT_VENUE=ilt\nRHT_ROLE=bastion\nRHT_ENROLLMENT=\nRHT_COURSE=\nRHT_TITLE=\nRHT_VMTREE=rhel$(cat /tmp/rht-release)/x86_64\nRHT_NETWORK=no" > /etc/rht
           - hostnamectl set-hostname utility.lab.example.com
