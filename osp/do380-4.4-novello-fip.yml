@@ -101,7 +101,7 @@ resources:
       name: classroom-port-0
       network:
         get_resource: classroom_network
-      mac_address: 52:54:00:00:00:FE
+      mac_address: "52:54:00:00:00:FE"
       port_security_enabled: false
       fixed_ips:
       - subnet:
@@ -114,7 +114,7 @@ resources:
       name: classroom-port-1
       network:
         get_resource: external_network
-      mac_address: 52:54:00:01:00:FE
+      mac_address: "52:54:00:01:00:FE"
       port_security_enabled: false
       fixed_ips:
       - subnet:
@@ -127,7 +127,7 @@ resources:
       name: bastion-port-0
       network:
         get_resource: student_network
-      mac_address: 52:54:00:00:FA:FE
+      mac_address: "52:54:00:00:FA:FE"
       port_security_enabled: false
       fixed_ips:
       - subnet:
@@ -140,7 +140,7 @@ resources:
       name: bastion-port-1
       network:
         get_resource: classroom_network
-      mac_address: 52:54:00:01:FC:01
+      mac_address: "52:54:00:01:FC:01"
       port_security_enabled: false
       fixed_ips:
       - subnet:
@@ -153,7 +153,7 @@ resources:
       name: workstation-port-0
       network:
         get_resource: student_network
-      mac_address: 52:54:00:00:FA:09
+      mac_address: "52:54:00:00:FA:09"
       port_security_enabled: false
       fixed_ips:
       - subnet:
@@ -166,7 +166,7 @@ resources:
       name: utility-port-0
       network:
         get_resource: student_network
-      mac_address: 52:54:00:00:FA:FD
+      mac_address: "52:54:00:00:FA:FD"
       port_security_enabled: false
       fixed_ips:
       - subnet:
@@ -179,7 +179,7 @@ resources:
       name: utility-port-1
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:FE
+      mac_address: "52:54:00:00:32:FE"
       port_security_enabled: false
       fixed_ips:
       - subnet:
@@ -192,7 +192,7 @@ resources:
       name: bootstrap-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:09
+      mac_address: "52:54:00:00:32:09"
       port_security_enabled: false
 
   master1-0_port:
@@ -201,7 +201,7 @@ resources:
       name: master1-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0A
+      mac_address: "52:54:00:00:32:0A"
       port_security_enabled: false
 
   master2-0_port:
@@ -210,7 +210,7 @@ resources:
       name: master2-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0B
+      mac_address: "52:54:00:00:32:0B"
       port_security_enabled: false
 
   master3-0_port:
@@ -219,7 +219,7 @@ resources:
       name: master3-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0C
+      mac_address: "52:54:00:00:32:0C"
       port_security_enabled: false
 
   worker1-0_port:
@@ -228,7 +228,7 @@ resources:
       name: worker1-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0D
+      mac_address: "52:54:00:00:32:0D"
       port_security_enabled: false
 
   worker2-0_port:
@@ -237,7 +237,7 @@ resources:
       name: worker2-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0E
+      mac_address: "52:54:00:00:32:0E"
       port_security_enabled: false
 
   worker3-0_port:
@@ -246,7 +246,7 @@ resources:
       name: worker3-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0F
+      mac_address: "52:54:00:00:32:0F"
       port_security_enabled: false
 
   fip_classroom:
