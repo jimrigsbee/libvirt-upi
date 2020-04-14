@@ -102,7 +102,7 @@ resources:
       name: classroom-port-0
       network:
         get_resource: classroom_network
-      mac_address: 52:54:00:00:00:fe
+      mac_address: 52:54:00:00:00:FE
       port_security_enabled: false
       fixed_ips:
       - subnet:
@@ -115,7 +115,7 @@ resources:
       name: classroom-port-1
       network:
         get_resource: external_network
-      mac_address: 52:54:00:01:00:fe
+      mac_address: 52:54:00:01:00:FE
       port_security_enabled: false
       fixed_ips:
       - subnet:
@@ -167,12 +167,12 @@ resources:
       name: utility-port-0
       network:
         get_resource: student_network
-      mac_address: 52:54:00:00:FA:0A
+      mac_address: 52:54:00:00:FA:FD
       port_security_enabled: false
       fixed_ips:
       - subnet:
           get_resource: student_subnet
-        ip_address: 172.25.250.10
+        ip_address: 172.25.250.253
 
   utility-1_port:
     type: OS::Neutron::Port
@@ -180,7 +180,7 @@ resources:
       name: utility-port-1
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:01:FA:0A
+      mac_address: 52:54:00:00:32:01
       port_security_enabled: false
       fixed_ips:
       - subnet:
@@ -193,7 +193,7 @@ resources:
       name: bootstrap-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:FA:0B
+      mac_address: 52:54:00:00:32:0A
       port_security_enabled: false
 
   master1-0_port:
@@ -202,7 +202,7 @@ resources:
       name: master1-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:FA:0C
+      mac_address: 52:54:00:00:32:0B
       port_security_enabled: false
 
   master2-0_port:
@@ -211,7 +211,7 @@ resources:
       name: master2-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:FA:0D
+      mac_address: 52:54:00:00:32:0C
       port_security_enabled: false
 
   master3-0_port:
@@ -220,7 +220,7 @@ resources:
       name: master3-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:FA:0E
+      mac_address: 52:54:00:00:32:0D
       port_security_enabled: false
 
   worker1-0_port:
@@ -229,7 +229,7 @@ resources:
       name: worker1-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:FA:0F
+      mac_address: 52:54:00:00:32:0E
       port_security_enabled: false
 
   worker2-0_port:
@@ -238,7 +238,7 @@ resources:
       name: worker2-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:FA:16
+      mac_address: 52:54:00:00:32:0F
       port_security_enabled: false
 
   worker3-0_port:
@@ -247,7 +247,7 @@ resources:
       name: worker3-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:FA:17
+      mac_address: 52:54:00:00:32:10
       port_security_enabled: false
 
   fip_classroom:
@@ -296,13 +296,6 @@ resources:
     properties:
       name: workstation-vda
       image: rhel-workstation-vda-10G-8.1-20200316
-      size: 10
-
-  utility_volume_vda:
-    type: OS::Cinder::Volume
-    properties:
-      name: utility-vda
-      image: rhel-server-vda-10G-8.1-20200316
       size: 10
 
   utility_volume_vdb:
@@ -443,31 +436,81 @@ resources:
       - port:
           get_resource: utility-1_port
       block_device_mapping_v2:
-      - volume_id:
-          get_resource: utility_volume_vda
-        boot_index: 0
+      - boot_index: 0
+        delete_on_termination: true
+        device_name: vda
+        image: rhel-8.1-vda-20200127-default-kvm-image
+        volume_size: 10
       - volume_id:
           get_resource: utility_volume_vdb
         boot_index: -1
       user_data: |
         #cloud-config
           bootcmd:
+            - echo -e '172.25.254.254\tclassroom.example.com classroom' >> /etc/hosts
+            - echo -e '172.25.254.254\tcontent.example.com content' >> /etc/hosts
+            - echo -e '172.25.254.254\tmaterials.example.com materials' >> /etc/hosts
+            - echo -e '10.30.0.5\tprovision.example.com provision' >> /etc/hosts
+            - echo $(ip a | grep '^2:' | cut -d':' -f2) > /tmp/NIC1
             - echo $(ip a | grep '^3:' | cut -d':' -f2) > /tmp/NIC2
+            - nmcli con mod $(cat /tmp/NIC1) connection.autoconnect yes
+            - nmcli con mod $(cat /tmp/NIC1) ipv4.ignore-auto-dns yes
+            - nmcli con mod $(cat /tmp/NIC1) ipv6.ignore-auto-dns yes
+            - nmcli con mod $(cat /tmp/NIC1) ipv4.addresses 172.25.250.253/24
+            - nmcli con mod $(cat /tmp/NIC1) ipv4.method static
+            - nmcli con mod $(cat /tmp/NIC1) ipv4.gateway 172.25.250.254
+            - nmcli con mod $(cat /tmp/NIC1) ipv4.dns 172.25.250.254
+            - nmcli con mod $(cat /tmp/NIC1) ipv4.dns-search lab.example.com,example.com
+            #- nmcli con mod $(cat /tmp/NIC1) connection.zone trusted
             - nmcli con mod $(cat /tmp/NIC2) connection.autoconnect yes
             - nmcli con mod $(cat /tmp/NIC2) ipv4.ignore-auto-dns yes
             - nmcli con mod $(cat /tmp/NIC2) ipv6.ignore-auto-dns yes
             - nmcli con mod $(cat /tmp/NIC2) ipv4.addresses 192.168.50.1/24
             - nmcli con mod $(cat /tmp/NIC2) ipv4.method static
-            - nmcli reload
+            - nmcli con reload
+            - nmcli con up $(cat /tmp/NIC1)
             - nmcli con up $(cat /tmp/NIC2)
+            - echo $(sed -e 's/.*release //' -e 's/ .*//' /etc/redhat-release) > /tmp/rht-release
+            #- echo -e "RHT_VENUE=ilt\nRHT_ROLE=bastion\nRHT_ENROLLMENT=\nRHT_COURSE=\nRHT_TITLE=\nRHT_VMTREE=rhel$(cat /tmp/rht-release)/x86_64\nRHT_NETWORK=no" > /etc/rht
+            - hostnamectl set-hostname utility.lab.example.com
+            - echo -e "[rhel-$(cat /tmp/rht-release)-for-x86_64-baseos-rpms]\nbaseurl = http://content.example.com/rhel$(cat /tmp/rht-release)/x86_64/dvd/BaseOS\nenabled = true\ngpgcheck = false\nname = Red Hat Enterprise Linux $(cat /tmp/rht-release) BaseOS (dvd)\n[rhel-$(cat /tmp/rht-release)-for-x86_64-appstream-rpms]\nbaseurl = http://content.example.com/rhel$(cat /tmp/rht-release)/x86_64/dvd/AppStream\nenabled = true\ngpgcheck = false\nname = Red Hat Enterprise Linux $(cat /tmp/rht-release) AppStream (dvd)" > /etc/yum.repos.d/rhel_dvd.repo
+          users:
+            - name: student
+              gecos: Student User
+              groups: wheel
+              sudo: ALL=(ALL) NOPASSWD:ALL
+              passwd: $6$8oIjLCsc$/n1iQXYh1E6.uOEuJKgioqAtmqm2TQmkJGF2RwyteIr1tIfrPdiRYgWe6Sjen5/eMij2uHM/a1tue/QRlo3X80
+              lock-passwd: false
+          packages:
+            - '@base'
+            - firewalld
+            - vim-enhanced
+            - gpm
+            - xkeyboard-config
+            - tmux
+            - python36
+            - python3-pexpect
+          package_upgrade: true
           runcmd:
-            - nmcli con mod $(cat /tmp/NIC2) connection.autoconnect yes
-            - nmcli con mod $(cat /tmp/NIC2) ipv4.ignore-auto-dns yes
-            - nmcli con mod $(cat /tmp/NIC2) ipv6.ignore-auto-dns yes
-            - nmcli con mod $(cat /tmp/NIC2) ipv4.addresses 192.168.50.1/24
-            - nmcli con mod $(cat /tmp/NIC2) ipv4.method static
-            - nmcli con mod $(cat /tmp/NIC2) ipv4.dns 192.168.50.1
-            - nmcli con mod $(cat /tmp/NIC2) ipv4.dns-search ocp4.example.com,lab.example.com,example.com
+            - echo 'redhat' | passwd --stdin root
+            - sed -i -e '/^PasswordAuthentication/s/no/yes/' /etc/ssh/sshd_config
+            - curl -f -o /etc/.rht_authorized_keys http://provision.example.com/files/rht_authorized_keys
+            - sed -i -e 's|^AuthorizedKeysFile.*|AuthorizedKeysFile /etc/.rht_authorized_keys .ssh/authorized_keys|' /etc/ssh/sshd_config
+            - curl -f -s -o /tmp/student0Key.pub http://content.example.com/ks/sshkeys/student0Key.pub
+            - cat /tmp/student0Key.pub >> /etc/.rht_authorized_keys
+            - curl -f -o /etc/ssh/ssh_config.d/01-training.conf http://provision.example.com/files/rht_ssh-01-training.conf
+            - sed -i -e "/^#ClientAliveInterval.*/a ClientAliveInterval 60" /etc/ssh/sshd_config
+            - sed -i -e 's|secure_path.*|&:/usr/local/sbin:/usr/local/bin|' /etc/sudoers
+            - echo -e "\nDefaults     lecture = never" >> /etc/sudoers
+            - systemctl disable cloud-init.service
+            - systemctl disable cloud-config.service
+            - systemctl disable cloud-init-local.service
+            - systemctl disable cloud-final.service
+            - rm /etc/NetworkManager/conf.d/99-cloud-init.conf
+            - systemctl disable kdump.service
+            - sed -i -e 's/enabled=1/enabled=0/' /etc/yum/pluginconf.d/subscription-manager.conf
+            - sed -i -e 's/enabled=1/enabled=0/' /etc/yum/pluginconf.d/product-id.conf
+      user_data_format: RAW
 
   bootstrap_server:
     type: OS::Nova::Server

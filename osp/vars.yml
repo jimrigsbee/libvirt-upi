@@ -1,0 +1,44 @@
+rhcos_kernel: rhcos-4.4.0-rc.1-x86_64-installer-kernel-x86_64
+rhcos_initramfs: rhcos-4.4.0-rc.1-x86_64-installer-initramfs.x86_64.img
+rhcos_biosimg: "rhcos-4.4.0-rc.1-x86_64-metal.x86_64.raw.gz"
+rhcos_kernel_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.4/latest/{{ rhcos_kernel }}"
+rhcos_initramfs_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.4/latest/{{ rhcos_initramfs }}"
+rhcos_biosimg_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.4/latest/{{ rhcos_biosimg }}"
+
+rhcos_version: 4.4.0-rc.1
+openshift_version: 4.4
+openshift_z_version: 4.4.0-rc.6
+openshift_upgrade: false
+openshift_smoke_tests_must_succeed: true
+
+configure_htpasswd_auth: true
+
+subscribe: false
+
+bastion_cloud_user: student
+bastion_vm_ipaddress: "192.168.50.1"
+vm_ssh_key: /home/student/.ssh/id_rsa.pub
+vm_ssh_private_key: id_rsa
+vm_ssh_private_key_location: /home/student/.ssh/id_rsa
+
+manage_servers: false
+cloud_provider: osp
+workers:
+  - name: "worker01"
+    disksize: 40G
+    macaddress: "52:54:00:00:32:0E"
+    ipaddress: "192.168.50.14"
+    vcpu: 4
+    memory_gb: 8
+  - name: "worker02"
+    disksize: 40G
+    macaddress: "52:54:00:00:32:0F"
+    ipaddress: "192.168.50.15"
+    vcpu: 4
+    memory_gb: 8
+  - name: "worker03"
+    disksize: 40G
+    macaddress: "52:54:00:00:32:10"
+    ipaddress: "192.168.50.16"
+    vcpu: 4
+    memory_gb: 8
