@@ -16,7 +16,7 @@ configure_htpasswd_auth: true
 subscribe: false
 
 bastion_cloud_user: student
-bastion_vm_ipaddress: "192.168.50.2"
+bastion_vm_ipaddress: "192.168.50.254"
 vm_ssh_key: /home/student/.ssh/id_rsa.pub
 vm_ssh_private_key: id_rsa
 vm_ssh_private_key_location: /home/student/.ssh/id_rsa
@@ -26,19 +26,19 @@ cloud_provider: osp
 workers:
   - name: "worker01"
     disksize: 40G
-    macaddress: "52:54:00:00:32:0E"
+    macaddress: "52:54:00:00:32:0D"
     ipaddress: "192.168.50.14"
     vcpu: 4
     memory_gb: 8
   - name: "worker02"
     disksize: 40G
-    macaddress: "52:54:00:00:32:0F"
+    macaddress: "52:54:00:00:32:0E"
     ipaddress: "192.168.50.15"
     vcpu: 4
     memory_gb: 8
   - name: "worker03"
     disksize: 40G
-    macaddress: "52:54:00:00:32:10"
+    macaddress: "52:54:00:00:32:0F"
     ipaddress: "192.168.50.16"
     vcpu: 4
     memory_gb: 8

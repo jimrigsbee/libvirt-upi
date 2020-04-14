@@ -179,12 +179,12 @@ resources:
       name: utility-port-1
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:02
+      mac_address: 52:54:00:00:32:FE
       port_security_enabled: false
       fixed_ips:
       - subnet:
           get_resource: dhcp_subnet
-        ip_address: 192.168.50.2
+        ip_address: 192.168.50.254
 
   bootstrap-0_port:
     type: OS::Neutron::Port
@@ -192,7 +192,7 @@ resources:
       name: bootstrap-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0A
+      mac_address: 52:54:00:00:32:09
       port_security_enabled: false
 
   master1-0_port:
@@ -201,7 +201,7 @@ resources:
       name: master1-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0B
+      mac_address: 52:54:00:00:32:0A
       port_security_enabled: false
 
   master2-0_port:
@@ -210,7 +210,7 @@ resources:
       name: master2-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0C
+      mac_address: 52:54:00:00:32:0B
       port_security_enabled: false
 
   master3-0_port:
@@ -219,7 +219,7 @@ resources:
       name: master3-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0D
+      mac_address: 52:54:00:00:32:0C
       port_security_enabled: false
 
   worker1-0_port:
@@ -228,7 +228,7 @@ resources:
       name: worker1-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0E
+      mac_address: 52:54:00:00:32:0D
       port_security_enabled: false
 
   worker2-0_port:
@@ -237,7 +237,7 @@ resources:
       name: worker2-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:0F
+      mac_address: 52:54:00:00:32:0E
       port_security_enabled: false
 
   worker3-0_port:
@@ -246,7 +246,7 @@ resources:
       name: worker3-port-0
       network:
         get_resource: dhcp_network
-      mac_address: 52:54:00:00:32:10
+      mac_address: 52:54:00:00:32:0F
       port_security_enabled: false
 
   fip_classroom:
@@ -464,7 +464,7 @@ resources:
             - nmcli con mod $(cat /tmp/NIC2) connection.autoconnect yes
             - nmcli con mod $(cat /tmp/NIC2) ipv4.ignore-auto-dns yes
             - nmcli con mod $(cat /tmp/NIC2) ipv6.ignore-auto-dns yes
-            - nmcli con mod $(cat /tmp/NIC2) ipv4.addresses 192.168.50.2/24
+            - nmcli con mod $(cat /tmp/NIC2) ipv4.addresses 192.168.50.254/24
             - nmcli con mod $(cat /tmp/NIC2) ipv4.method static
             - nmcli con reload
             - nmcli con up $(cat /tmp/NIC1)
