@@ -73,7 +73,6 @@ resources:
       gateway_ip:
       enable_dhcp: False
       dns_nameservers:
-      - 192.168.50.2
       - 8.8.8.8
 
   Router0_router:
