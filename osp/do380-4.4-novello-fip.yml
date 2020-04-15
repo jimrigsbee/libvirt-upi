@@ -580,7 +580,13 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: bootstrap_volume_vda
-        boot_index: 0
+        boot_index: 1
+      - boot_index: 0
+        delete_on_termination: true
+        device_name: hda
+        image: ipxe-net0-20200124.iso
+        device_type: cdrom
+        disk_bus: ide
 
   master1_server:
     type: OS::Nova::Server
@@ -596,7 +602,13 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: master1_volume_vda
-        boot_index: 0
+        boot_index: 1
+      - boot_index: 0
+        delete_on_termination: true
+        device_name: hda
+        image: ipxe-net0-20200124.iso
+        device_type: cdrom
+        disk_bus: ide
 
   master2_server:
     type: OS::Nova::Server
@@ -612,7 +624,13 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: master2_volume_vda
-        boot_index: 0
+        boot_index: 1
+      - boot_index: 0
+        delete_on_termination: true
+        device_name: hda
+        image: ipxe-net0-20200124.iso
+        device_type: cdrom
+        disk_bus: ide
 
   master3_server:
     type: OS::Nova::Server
@@ -628,7 +646,13 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: master3_volume_vda
-        boot_index: 0
+        boot_index: 1
+      - boot_index: 0
+        delete_on_termination: true
+        device_name: hda
+        image: ipxe-net0-20200124.iso
+        device_type: cdrom
+        disk_bus: ide
 
   worker1_server:
     type: OS::Nova::Server
@@ -644,7 +668,13 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: worker1_volume_vda
-        boot_index: 0
+        boot_index: 1
+      - boot_index: 0
+        delete_on_termination: true
+        device_name: hda
+        image: ipxe-net0-20200124.iso
+        device_type: cdrom
+        disk_bus: ide
 
   worker2_server:
     type: OS::Nova::Server
@@ -660,7 +690,13 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: worker2_volume_vda
-        boot_index: 0
+        boot_index: 1
+      - boot_index: 0
+        delete_on_termination: true
+        device_name: hda
+        image: ipxe-net0-20200124.iso
+        device_type: cdrom
+        disk_bus: ide
 
   worker3_server:
     type: OS::Nova::Server
@@ -676,4 +712,10 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: worker3_volume_vda
-        boot_index: 0
+        boot_index: 1
+      - boot_index: 0
+        delete_on_termination: true
+        device_name: hda
+        image: ipxe-net0-20200124.iso
+        device_type: cdrom
+        disk_bus: ide
