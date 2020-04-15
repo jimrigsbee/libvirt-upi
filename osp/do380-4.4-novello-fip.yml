@@ -509,9 +509,7 @@ resources:
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.gateway 172.25.250.254
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns 172.25.250.254
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns-search lab.example.com,example.com
-          - nmcli
           - nmcli con reload
-          - nmcli 
           - nmcli con mod "$(cat /tmp/NIC2)" connection.autoconnect yes
           - nmcli con mod "$(cat /tmp/NIC2)" ipv4.ignore-auto-dns yes
           - nmcli con mod "$(cat /tmp/NIC2)" ipv6.ignore-auto-dns yes
@@ -529,11 +527,13 @@ resources:
           - hostnamectl set-hostname utility.lab.example.com
           - echo -e "[rhel-$(cat /tmp/rht-release)-for-x86_64-baseos-rpms]\nbaseurl = http://content.example.com/rhel$(cat /tmp/rht-release)/x86_64/dvd/BaseOS\nenabled = true\ngpgcheck = false\nname = Red Hat Enterprise Linux $(cat /tmp/rht-release) BaseOS (dvd)\n[rhel-$(cat /tmp/rht-release)-for-x86_64-appstream-rpms]\nbaseurl = http://content.example.com/rhel$(cat /tmp/rht-release)/x86_64/dvd/AppStream\nenabled = true\ngpgcheck = false\nname = Red Hat Enterprise Linux $(cat /tmp/rht-release) AppStream (dvd)" > /etc/yum.repos.d/rhel_dvd.repo
         users:
-          - name: instructor
-            gecos: Instructor User
+          - name: lab
+            gecos: lab User
             sudo: ALL=(ALL) NOPASSWD:ALL
             passwd: $6$PwXvuS6P$8dbbPxMcMwCJwqlahjiNrkIWbbbmadGNgHppnz/Z0H8huqztgw11U6U0DPEIu1C0gxSwTbXLAF6eJeWGP70Jf1
             lock-passwd: false
+            ssh_authorized_keys:
+              - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGtUW3ismHyuCW4CDdTVOOOq6aySdtYenXFWWx7HJa4VTepkG00aaLId9ocra10hc+MB0GTJMCyabDv3i8NKdi6GDH/aOLVsp/Ewy8DEzZMBlJDCt4v2i4/wU4liw6KgEFkZs+5hnqU8d4QzldyGJ5onr+AGvFOKG68CS0BBl40Z1twf1HhCyx8k6nzD2ovlkxWRFZKPAFrtPCBVvQDkOfVFZF+lwzaSztgAjbFZ4A9jqQyUYx4kOJ5DtRef36ucdUdVQale0+8lICl7/gb142SPpYfhxe88/BJScLPRjvVNeu1TxRmoHtVazqnAoRxQYAn2MoI6AG+w6QuZf8f7aL LabGradingKey
         packages:
           - '@base'
           - firewalld
@@ -555,6 +555,7 @@ resources:
           - sed -i -e "/^#ClientAliveInterval.*/a ClientAliveInterval 60" /etc/ssh/sshd_config
           - sed -i -e 's|secure_path.*|&:/usr/local/sbin:/usr/local/bin|' /etc/sudoers
           - echo -e "\nDefaults     lecture = never" >> /etc/sudoers
+          - systemctl restart sshd
           - systemctl disable cloud-init.service
           - systemctl disable cloud-config.service
           - systemctl disable cloud-init-local.service
