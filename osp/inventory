@@ -17,4 +17,4 @@ master03.ocp4.example.com
 # dynamically generated
 
 [helper_vm]
-utility.lab.example.com ansible_host=192.168.50.254 ansible_user=student ansible_ssh_private_key_file=/home/student/.ssh/id_rsa
+utility.lab.example.com ansible_host=172.25.250.253 ansible_user=student ansible_ssh_private_key_file=/home/student/.ssh/id_rsa
