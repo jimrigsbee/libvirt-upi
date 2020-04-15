@@ -22,8 +22,8 @@
     - install_openshift
 
 - name: Stop Cluster OCP VMs
-  os_server_actions:
-    command: stop
+  os_server_action:
+    action: stop
     server: "{{ item.split('.')[0] }}"
     wait: yes
     auth:
@@ -31,6 +31,8 @@
       username: "{{ osp_auth_username }}"
       password: "{{ osp_auth_password }}"
       project_name: "{{ osp_auth_project }}"
+      os_user_domain_name: Default
+      os_project_domain_name: Default
   with_items:
     - "{{ groups['ocp4_nodes'] }}"
   when: cloud_provider == 'osp'
@@ -38,8 +40,8 @@
     - install_openshift
 
 - name: Start Cluster bootstrap and master VMs
-  os_server_actions:
-    command: start
+  os_server_action:
+    action: start
     server: "{{ item.split('.')[0] }}"
     wait: no
     auth:
@@ -47,6 +49,8 @@
       username: "{{ osp_auth_username }}"
       password: "{{ osp_auth_password }}"
       project_name: "{{ osp_auth_project }}"
+      os_user_domain_name: Default
+      os_project_domain_name: Default
   with_items:
     - "{{ groups['ocp4_bootstrap_vm'] }}"
     - "{{ groups['ocp4_master_vm'] }}"
@@ -140,7 +144,7 @@
   tags:
     - install_openshift
 
-- name: Start workstation VMs
+- name: Start worker VMs
   delegate_to: localhost
   become: true
   ignore_errors: true
@@ -153,9 +157,9 @@
   tags:
     - install_openshift
 
-- name: Start Cluster bootstrap and master VMs
-  os_server_actions:
-    command: start
+- name: Start worker VMs
+  os_server_action:
+    action: start
     server: "{{ item.split('.')[0] }}"
     wait: no
     auth:
@@ -163,6 +167,8 @@
       username: "{{ osp_auth_username }}"
       password: "{{ osp_auth_password }}"
       project_name: "{{ osp_auth_project }}"
+      os_user_domain_name: Default
+      os_project_domain_name: Default
   with_items:
     - "{{ groups['ocp4_worker_vm'] }}"
   when: cloud_provider == 'osp'
