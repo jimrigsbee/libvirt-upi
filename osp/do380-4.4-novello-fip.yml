@@ -587,6 +587,7 @@ resources:
         image: ipxe-net0-20200124.iso
         device_type: cdrom
         disk_bus: ide
+        volume_size: 1
 
   master1_server:
     type: OS::Nova::Server
@@ -609,6 +610,7 @@ resources:
         image: ipxe-net0-20200124.iso
         device_type: cdrom
         disk_bus: ide
+        volume_size: 1
 
   master2_server:
     type: OS::Nova::Server
@@ -631,6 +633,7 @@ resources:
         image: ipxe-net0-20200124.iso
         device_type: cdrom
         disk_bus: ide
+        volume_size: 1
 
   master3_server:
     type: OS::Nova::Server
@@ -653,6 +656,7 @@ resources:
         image: ipxe-net0-20200124.iso
         device_type: cdrom
         disk_bus: ide
+        volume_size: 1
 
   worker1_server:
     type: OS::Nova::Server
@@ -675,6 +679,7 @@ resources:
         image: ipxe-net0-20200124.iso
         device_type: cdrom
         disk_bus: ide
+        volume_size: 1
 
   worker2_server:
     type: OS::Nova::Server
@@ -697,6 +702,7 @@ resources:
         image: ipxe-net0-20200124.iso
         device_type: cdrom
         disk_bus: ide
+        volume_size: 1
 
   worker3_server:
     type: OS::Nova::Server
@@ -719,3 +725,4 @@ resources:
         image: ipxe-net0-20200124.iso
         device_type: cdrom
         disk_bus: ide
+        volume_size: 1
