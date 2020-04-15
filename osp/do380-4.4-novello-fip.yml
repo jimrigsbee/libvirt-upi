@@ -499,8 +499,8 @@ resources:
           - echo -e '172.25.254.254\tcontent.example.com content' >> /etc/hosts
           - echo -e '172.25.254.254\tmaterials.example.com materials' >> /etc/hosts
           - echo -e '10.30.0.5\tprovision.example.com provision' >> /etc/hosts
-          - echo "'System$(ip a | grep '^2:' | cut -d':' -f2)'" > /tmp/NIC1
-          - echo "'System$(ip a | grep '^3:' | cut -d':' -f2)'" > /tmp/NIC2
+          - echo "System$(ip a | grep '^2:' | cut -d':' -f2)" > /tmp/NIC1
+          - echo "System$(ip a | grep '^3:' | cut -d':' -f2)" > /tmp/NIC2
           - nmcli con mod "$(cat /tmp/NIC1)" connection.autoconnect yes
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.ignore-auto-dns yes
           - nmcli con mod "$(cat /tmp/NIC1)" ipv6.ignore-auto-dns yes
@@ -509,6 +509,7 @@ resources:
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.gateway 172.25.250.254
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns 172.25.250.254
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns-search lab.example.com,example.com
+          - echo nmcli con mod "$(cat /tmp/NIC2)" connection.autoconnect yes
           - nmcli con mod "$(cat /tmp/NIC2)" connection.autoconnect yes
           - nmcli con mod "$(cat /tmp/NIC2)" ipv4.ignore-auto-dns yes
           - nmcli con mod "$(cat /tmp/NIC2)" ipv6.ignore-auto-dns yes
