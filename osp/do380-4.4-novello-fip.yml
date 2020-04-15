@@ -202,8 +202,6 @@ resources:
     properties:
       network: builder_network
       mac_address: "52:54:00:30:32:fe"
-      fixed_ips:
-        - ip_address: 10.30.0.7
 
   # bootstrap-0_port:
   #   type: OS::Neutron::Port
