@@ -518,17 +518,18 @@ resources:
           - nmcli con reload
           - nmcli con up "$(cat /tmp/NIC1)"
           - nmcli con up "$(cat /tmp/NIC2)"
+          - echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+          - sysctl -p
           - route add -net 172.25.254.0 netmask 255.255.255.0 gw 172.25.250.254 dev eth0
           - echo $(sed -e 's/.*release //' -e 's/ .*//' /etc/redhat-release) > /tmp/rht-release
           #- echo -e "RHT_VENUE=ilt\nRHT_ROLE=bastion\nRHT_ENROLLMENT=\nRHT_COURSE=\nRHT_TITLE=\nRHT_VMTREE=rhel$(cat /tmp/rht-release)/x86_64\nRHT_NETWORK=no" > /etc/rht
           - hostnamectl set-hostname utility.lab.example.com
           - echo -e "[rhel-$(cat /tmp/rht-release)-for-x86_64-baseos-rpms]\nbaseurl = http://content.example.com/rhel$(cat /tmp/rht-release)/x86_64/dvd/BaseOS\nenabled = true\ngpgcheck = false\nname = Red Hat Enterprise Linux $(cat /tmp/rht-release) BaseOS (dvd)\n[rhel-$(cat /tmp/rht-release)-for-x86_64-appstream-rpms]\nbaseurl = http://content.example.com/rhel$(cat /tmp/rht-release)/x86_64/dvd/AppStream\nenabled = true\ngpgcheck = false\nname = Red Hat Enterprise Linux $(cat /tmp/rht-release) AppStream (dvd)" > /etc/yum.repos.d/rhel_dvd.repo
         users:
-          - name: student
-            gecos: Student User
-            groups: wheel
+          - name: instructor
+            gecos: Instructor User
             sudo: ALL=(ALL) NOPASSWD:ALL
-            passwd: $6$8oIjLCsc$/n1iQXYh1E6.uOEuJKgioqAtmqm2TQmkJGF2RwyteIr1tIfrPdiRYgWe6Sjen5/eMij2uHM/a1tue/QRlo3X80
+            passwd: $6$PwXvuS6P$8dbbPxMcMwCJwqlahjiNrkIWbbbmadGNgHppnz/Z0H8huqztgw11U6U0DPEIu1C0gxSwTbXLAF6eJeWGP70Jf1
             lock-passwd: false
         packages:
           - '@base'
