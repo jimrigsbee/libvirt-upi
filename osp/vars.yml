@@ -15,14 +15,20 @@ configure_htpasswd_auth: true
 
 subscribe: false
 
-bastion_cloud_user: student
+bastion_cloud_user: lab
 bastion_vm_ipaddress: "192.168.50.254"
-vm_ssh_key: /home/student/.ssh/id_rsa.pub
-vm_ssh_private_key: id_rsa
-vm_ssh_private_key_location: /home/student/.ssh/id_rsa
+vm_ssh_key: /home/student/.ssh/lab_rsa.pub
+vm_ssh_private_key: lab_rsa
+vm_ssh_private_key_location: /home/student/.ssh/lab_rsa
 
 manage_servers: false
 cloud_provider: osp
+osp_auth_url: "http://150.238.9.131:5000//v3"
+# Put the following in secrets
+#osp_auth_username:
+#osp_auth_password:
+#osp_auth_project:
+
 workers:
   - name: "worker01"
     disksize: 40G

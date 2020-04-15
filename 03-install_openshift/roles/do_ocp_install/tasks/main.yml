@@ -1,5 +1,5 @@
 ---
-- name: Start Cluster bastion and master VMs
+- name: Start Cluster bootstrap and master VMs
   delegate_to: localhost
   become: true
   ignore_errors: true
@@ -10,6 +10,47 @@
     - "{{ groups['ocp4_bootstrap_vm'] }}"
     - "{{ groups['ocp4_master_vm'] }}"
   when: cloud_provider == 'libvirt'
+  tags:
+    - install_openshift
+
+- name: Install Python shade module for OSP
+  pip:
+    name: shade
+  when: cloud_provider == 'osp'
+  become: true
+  tags:
+    - install_openshift
+
+- name: Stop Cluster OCP VMs
+  os_server_actions:
+    command: stop
+    server: "{{ item.split('.')[0] }}"
+    wait: yes
+    auth:
+      auth_url: "{{ osp_auth_url }}"
+      username: "{{ osp_auth_username }}"
+      password: "{{ osp_auth_password }}"
+      project_name: "{{ osp_auth_project }}"
+  with_items:
+    - "{{ groups['ocp4_nodes'] }}"
+  when: cloud_provider == 'osp'
+  tags:
+    - install_openshift
+
+- name: Start Cluster bootstrap and master VMs
+  os_server_actions:
+    command: start
+    server: "{{ item.split('.')[0] }}"
+    wait: no
+    auth:
+      auth_url: "{{ osp_auth_url }}"
+      username: "{{ osp_auth_username }}"
+      password: "{{ osp_auth_password }}"
+      project_name: "{{ osp_auth_project }}"
+  with_items:
+    - "{{ groups['ocp4_bootstrap_vm'] }}"
+    - "{{ groups['ocp4_master_vm'] }}"
+  when: cloud_provider == 'osp'
   tags:
     - install_openshift
 
@@ -109,6 +150,22 @@
   with_items:
     - "{{ groups['ocp4_worker_vm'] }}"
   when: cloud_provider == 'libvirt'
+  tags:
+    - install_openshift
+
+- name: Start Cluster bootstrap and master VMs
+  os_server_actions:
+    command: start
+    server: "{{ item.split('.')[0] }}"
+    wait: no
+    auth:
+      auth_url: "{{ osp_auth_url }}"
+      username: "{{ osp_auth_username }}"
+      password: "{{ osp_auth_password }}"
+      project_name: "{{ osp_auth_project }}"
+  with_items:
+    - "{{ groups['ocp4_worker_vm'] }}"
+  when: cloud_provider == 'osp'
   tags:
     - install_openshift
 

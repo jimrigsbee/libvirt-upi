@@ -203,96 +203,96 @@ resources:
       network: builder_network
       mac_address: "52:54:00:30:32:fe"
 
-  # bootstrap-0_port:
-  #   type: OS::Neutron::Port
-  #   properties:
-  #     name: bootstrap-port-0
-  #     network:
-  #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:32:09"
-  #     port_security_enabled: false
-  #     fixed_ips:
-  #     - subnet:
-  #         get_resource: dhcp_subnet
-  #       ip_address: 192.168.50.9
-  #
-  # master1-0_port:
-  #   type: OS::Neutron::Port
-  #   properties:
-  #     name: master1-port-0
-  #     network:
-  #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:32:0A"
-  #     port_security_enabled: false
-  #     fixed_ips:
-  #     - subnet:
-  #         get_resource: dhcp_subnet
-  #       ip_address: 192.168.50.10
-  #
-  # master2-0_port:
-  #   type: OS::Neutron::Port
-  #   properties:
-  #     name: master2-port-0
-  #     network:
-  #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:32:0B"
-  #     port_security_enabled: false
-  #     fixed_ips:
-  #     - subnet:
-  #         get_resource: dhcp_subnet
-  #       ip_address: 192.168.50.11
-  #
-  # master3-0_port:
-  #   type: OS::Neutron::Port
-  #   properties:
-  #     name: master3-port-0
-  #     network:
-  #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:32:0C"
-  #     port_security_enabled: false
-  #     fixed_ips:
-  #     - subnet:
-  #         get_resource: dhcp_subnet
-  #       ip_address: 192.168.50.12
-  #
-  # worker1-0_port:
-  #   type: OS::Neutron::Port
-  #   properties:
-  #     name: worker1-port-0
-  #     network:
-  #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:32:0D"
-  #     port_security_enabled: false
-  #     fixed_ips:
-  #     - subnet:
-  #         get_resource: dhcp_subnet
-  #       ip_address: 192.168.50.13
-  #
-  # worker2-0_port:
-  #   type: OS::Neutron::Port
-  #   properties:
-  #     name: worker2-port-0
-  #     network:
-  #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:32:0E"
-  #     port_security_enabled: false
-  #     fixed_ips:
-  #     - subnet:
-  #         get_resource: dhcp_subnet
-  #       ip_address: 192.168.50.14
-  #
-  # worker3-0_port:
-  #   type: OS::Neutron::Port
-  #   properties:
-  #     name: worker3-port-0
-  #     network:
-  #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:32:0F"
-  #     port_security_enabled: false
-  #     fixed_ips:
-  #     - subnet:
-  #         get_resource: dhcp_subnet
-  #       ip_address: 192.168.50.15
+  bootstrap-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: bootstrap-port-0
+      network:
+        get_resource: dhcp_network
+      mac_address: "52:54:00:00:32:09"
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: dhcp_subnet
+        ip_address: 192.168.50.9
+
+  master1-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: master1-port-0
+      network:
+        get_resource: dhcp_network
+      mac_address: "52:54:00:00:32:0A"
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: dhcp_subnet
+        ip_address: 192.168.50.10
+
+  master2-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: master2-port-0
+      network:
+        get_resource: dhcp_network
+      mac_address: "52:54:00:00:32:0B"
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: dhcp_subnet
+        ip_address: 192.168.50.11
+
+  master3-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: master3-port-0
+      network:
+        get_resource: dhcp_network
+      mac_address: "52:54:00:00:32:0C"
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: dhcp_subnet
+        ip_address: 192.168.50.12
+
+  worker1-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: worker1-port-0
+      network:
+        get_resource: dhcp_network
+      mac_address: "52:54:00:00:32:0D"
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: dhcp_subnet
+        ip_address: 192.168.50.13
+
+  worker2-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: worker2-port-0
+      network:
+        get_resource: dhcp_network
+      mac_address: "52:54:00:00:32:0E"
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: dhcp_subnet
+        ip_address: 192.168.50.14
+
+  worker3-0_port:
+    type: OS::Neutron::Port
+    properties:
+      name: worker3-port-0
+      network:
+        get_resource: dhcp_network
+      mac_address: "52:54:00:00:32:0F"
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: dhcp_subnet
+        ip_address: 192.168.50.15
 
   fip_classroom:
     type: OS::Neutron::FloatingIP
@@ -349,54 +349,54 @@ resources:
       image: rhel-blankdisk-40G-20160317
       size: 40
 
-  # bootstrap_volume_vda:
-  #   type: OS::Cinder::Volume
-  #   properties:
-  #     name: bootstrap-vda
-  #     image: rhel-blankdisk-40G-20160317
-  #     size: 40
-  #
-  # master1_volume_vda:
-  #   type: OS::Cinder::Volume
-  #   properties:
-  #     name: master1-vda
-  #     image: rhel-blankdisk-40G-20160317
-  #     size: 40
-  #
-  # master2_volume_vda:
-  #   type: OS::Cinder::Volume
-  #   properties:
-  #     name: master2-vda
-  #     image: rhel-blankdisk-40G-20160317
-  #     size: 40
-  #
-  # master3_volume_vda:
-  #   type: OS::Cinder::Volume
-  #   properties:
-  #     name: master3-vda
-  #     image: rhel-blankdisk-40G-20160317
-  #     size: 40
-  #
-  # worker1_volume_vda:
-  #   type: OS::Cinder::Volume
-  #   properties:
-  #     name: worker1-vda
-  #     image: rhel-blankdisk-40G-20160317
-  #     size: 40
-  #
-  # worker2_volume_vda:
-  #   type: OS::Cinder::Volume
-  #   properties:
-  #     name: worker2-vda
-  #     image: rhel-blankdisk-40G-20160317
-  #     size: 40
-  #
-  # worker3_volume_vda:
-  #   type: OS::Cinder::Volume
-  #   properties:
-  #     name: worker3-vda
-  #     image: rhel-blankdisk-40G-20160317
-  #     size: 40
+  bootstrap_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: bootstrap-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  master1_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: master1-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  master2_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: master2-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  master3_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: master3-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  worker1_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: worker1-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  worker2_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: worker2-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
+
+  worker3_volume_vda:
+    type: OS::Cinder::Volume
+    properties:
+      name: worker3-vda
+      image: rhel-blankdisk-40G-20160317
+      size: 40
 
   affinity_group:
    type: OS::Nova::ServerGroup
@@ -468,7 +468,7 @@ resources:
 
   utility_server:
     type: OS::Nova::Server
-    depends_on: workstation_server
+    depends_on: bastion_server
     properties:
       name: utility
       flavor: CPU_2_Memory_2048_Disk_10
@@ -566,114 +566,114 @@ resources:
           - sed -i -e 's/enabled=1/enabled=0/' /etc/yum/pluginconf.d/product-id.conf
       user_data_format: RAW
 
-  # bootstrap_server:
-  #   type: OS::Nova::Server
-  #   depends_on: workstation_server
-  #   properties:
-  #     name: bootstrap
-  #     flavor: CPU_4_Memory_8192_Disk_40
-  #     scheduler_hints:
-  #       group: { get_resource: affinity_group }
-  #     networks:
-  #     - port:
-  #         get_resource: bootstrap-0_port
-  #     block_device_mapping_v2:
-  #     - volume_id:
-  #         get_resource: bootstrap_volume_vda
-  #       boot_index: 0
-  #
-  # master1_server:
-  #   type: OS::Nova::Server
-  #   depends_on: workstation_server
-  #   properties:
-  #     name: master1
-  #     flavor: CPU_4_Memory_16384_Disk_40
-  #     scheduler_hints:
-  #       group: { get_resource: affinity_group }
-  #     networks:
-  #     - port:
-  #         get_resource: master1-0_port
-  #     block_device_mapping_v2:
-  #     - volume_id:
-  #         get_resource: master1_volume_vda
-  #       boot_index: 0
-  #
-  # master2_server:
-  #   type: OS::Nova::Server
-  #   depends_on: workstation_server
-  #   properties:
-  #     name: master2
-  #     flavor: CPU_4_Memory_16384_Disk_40
-  #     scheduler_hints:
-  #       group: { get_resource: affinity_group }
-  #     networks:
-  #     - port:
-  #         get_resource: master2-0_port
-  #     block_device_mapping_v2:
-  #     - volume_id:
-  #         get_resource: master2_volume_vda
-  #       boot_index: 0
-  #
-  # master3_server:
-  #   type: OS::Nova::Server
-  #   depends_on: workstation_server
-  #   properties:
-  #     name: master3
-  #     flavor: CPU_4_Memory_16384_Disk_40
-  #     scheduler_hints:
-  #       group: { get_resource: affinity_group }
-  #     networks:
-  #     - port:
-  #         get_resource: master3-0_port
-  #     block_device_mapping_v2:
-  #     - volume_id:
-  #         get_resource: master3_volume_vda
-  #       boot_index: 0
-  #
-  # worker1_server:
-  #   type: OS::Nova::Server
-  #   depends_on: workstation_server
-  #   properties:
-  #     name: worker1
-  #     flavor: CPU_4_Memory_8192_Disk_40
-  #     scheduler_hints:
-  #       group: { get_resource: affinity_group }
-  #     networks:
-  #     - port:
-  #         get_resource: worker1-0_port
-  #     block_device_mapping_v2:
-  #     - volume_id:
-  #         get_resource: worker1_volume_vda
-  #       boot_index: 0
-  #
-  # worker2_server:
-  #   type: OS::Nova::Server
-  #   depends_on: workstation_server
-  #   properties:
-  #     name: worker2
-  #     flavor: CPU_4_Memory_8192_Disk_40
-  #     scheduler_hints:
-  #       group: { get_resource: affinity_group }
-  #     networks:
-  #     - port:
-  #         get_resource: worker2-0_port
-  #     block_device_mapping_v2:
-  #     - volume_id:
-  #         get_resource: worker2_volume_vda
-  #       boot_index: 0
-  #
-  # worker3_server:
-  #   type: OS::Nova::Server
-  #   depends_on: workstation_server
-  #   properties:
-  #     name: worker3
-  #     flavor: CPU_4_Memory_8192_Disk_40
-  #     scheduler_hints:
-  #       group: { get_resource: affinity_group }
-  #     networks:
-  #     - port:
-  #         get_resource: worker3-0_port
-  #     block_device_mapping_v2:
-  #     - volume_id:
-  #         get_resource: worker3_volume_vda
-  #       boot_index: 0
+  bootstrap_server:
+    type: OS::Nova::Server
+    depends_on: utility_server
+    properties:
+      name: bootstrap
+      flavor: CPU_4_Memory_8192_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: bootstrap-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: bootstrap_volume_vda
+        boot_index: 0
+
+  master1_server:
+    type: OS::Nova::Server
+    depends_on: utility_server
+    properties:
+      name: master01
+      flavor: CPU_4_Memory_16384_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: master1-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: master1_volume_vda
+        boot_index: 0
+
+  master2_server:
+    type: OS::Nova::Server
+    depends_on: utility_server
+    properties:
+      name: master02
+      flavor: CPU_4_Memory_16384_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: master2-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: master2_volume_vda
+        boot_index: 0
+
+  master3_server:
+    type: OS::Nova::Server
+    depends_on: utility_server
+    properties:
+      name: master03
+      flavor: CPU_4_Memory_16384_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: master3-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: master3_volume_vda
+        boot_index: 0
+
+  worker1_server:
+    type: OS::Nova::Server
+    depends_on: utility_server
+    properties:
+      name: worker01
+      flavor: CPU_4_Memory_8192_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: worker1-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: worker1_volume_vda
+        boot_index: 0
+
+  worker2_server:
+    type: OS::Nova::Server
+    depends_on: utility_server
+    properties:
+      name: worker02
+      flavor: CPU_4_Memory_8192_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: worker2-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: worker2_volume_vda
+        boot_index: 0
+
+  worker3_server:
+    type: OS::Nova::Server
+    depends_on: utility_server
+    properties:
+      name: worker03
+      flavor: CPU_4_Memory_8192_Disk_40
+      scheduler_hints:
+        group: { get_resource: affinity_group }
+      networks:
+      - port:
+          get_resource: worker3-0_port
+      block_device_mapping_v2:
+      - volume_id:
+          get_resource: worker3_volume_vda
+        boot_index: 0
