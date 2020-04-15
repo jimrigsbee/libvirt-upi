@@ -21,11 +21,11 @@ resources:
       name: external_network
       shared: false
 
-  # dhcp_network:
-  #   type: OS::Neutron::Net
-  #   properties:
-  #     name: dhcp_network
-  #     shared: false
+  dhcp_network:
+    type: OS::Neutron::Net
+    properties:
+      name: dhcp_network
+      shared: false
 
   classroom_subnet:
     type: OS::Neutron::Subnet
@@ -66,17 +66,17 @@ resources:
       dns_nameservers:
       - 8.8.8.8
 
-  # dhcp_subnet:
-  #   type: OS::Neutron::Subnet
-  #   properties:
-  #     name: dhcp_subnet
-  #     network_id:
-  #       get_resource: dhcp_network
-  #     cidr: 192.168.50.0/24
-  #     gateway_ip:
-  #     enable_dhcp: False
-  #     dns_nameservers:
-  #     - 8.8.8.8
+  dhcp_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name: dhcp_subnet
+      network_id:
+        get_resource: dhcp_network
+      cidr: 192.168.50.0/24
+      gateway_ip:
+      enable_dhcp: False
+      dns_nameservers:
+      - 8.8.8.8
 
   Router0_router:
     type: OS::Neutron::Router
@@ -176,18 +176,18 @@ resources:
           get_resource: student_subnet
         ip_address: 172.25.250.253
 
-  # utility-1_port:
-  #   type: OS::Neutron::Port
-  #   properties:
-  #     name: utility-port-1
-  #     network:
-  #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:32:FE"
-  #     port_security_enabled: false
-  #     fixed_ips:
-  #     - subnet:
-  #         get_resource: dhcp_subnet
-  #       ip_address: 192.168.50.254
+  utility-1_port:
+    type: OS::Neutron::Port
+    properties:
+      name: utility-port-1
+      network:
+        get_resource: dhcp_network
+      mac_address: "52:54:00:00:32:FE"
+      port_security_enabled: false
+      fixed_ips:
+      - subnet:
+          get_resource: dhcp_subnet
+        ip_address: 192.168.50.254
 
   utility-2_port:
     type: OS::Neutron::Port
@@ -209,12 +209,12 @@ resources:
   #     name: bootstrap-port-0
   #     network:
   #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:FA:0A"
+  #     mac_address: "52:54:00:00:32:09"
   #     port_security_enabled: false
   #     fixed_ips:
   #     - subnet:
   #         get_resource: dhcp_subnet
-  #       ip_address: 172.25.250.10
+  #       ip_address: 192.168.50.9
   #
   # master1-0_port:
   #   type: OS::Neutron::Port
@@ -222,12 +222,12 @@ resources:
   #     name: master1-port-0
   #     network:
   #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:FA:0B"
+  #     mac_address: "52:54:00:00:32:0A"
   #     port_security_enabled: false
   #     fixed_ips:
   #     - subnet:
   #         get_resource: dhcp_subnet
-  #       ip_address: 172.25.250.11
+  #       ip_address: 192.168.50.10
   #
   # master2-0_port:
   #   type: OS::Neutron::Port
@@ -235,12 +235,12 @@ resources:
   #     name: master2-port-0
   #     network:
   #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:FA:0C"
+  #     mac_address: "52:54:00:00:32:0B"
   #     port_security_enabled: false
   #     fixed_ips:
   #     - subnet:
   #         get_resource: dhcp_subnet
-  #       ip_address: 172.25.250.12
+  #       ip_address: 192.168.50.11
   #
   # master3-0_port:
   #   type: OS::Neutron::Port
@@ -248,12 +248,12 @@ resources:
   #     name: master3-port-0
   #     network:
   #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:FA:0D"
+  #     mac_address: "52:54:00:00:32:0C"
   #     port_security_enabled: false
   #     fixed_ips:
   #     - subnet:
   #         get_resource: dhcp_subnet
-  #       ip_address: 172.25.250.13
+  #       ip_address: 192.168.50.12
   #
   # worker1-0_port:
   #   type: OS::Neutron::Port
@@ -261,12 +261,12 @@ resources:
   #     name: worker1-port-0
   #     network:
   #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:FA:0E"
+  #     mac_address: "52:54:00:00:32:0D"
   #     port_security_enabled: false
   #     fixed_ips:
   #     - subnet:
   #         get_resource: dhcp_subnet
-  #       ip_address: 172.25.250.14
+  #       ip_address: 192.168.50.13
   #
   # worker2-0_port:
   #   type: OS::Neutron::Port
@@ -274,12 +274,12 @@ resources:
   #     name: worker2-port-0
   #     network:
   #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:FA:0F"
+  #     mac_address: "52:54:00:00:32:0E"
   #     port_security_enabled: false
   #     fixed_ips:
   #     - subnet:
   #         get_resource: dhcp_subnet
-  #       ip_address: 172.25.250.15
+  #       ip_address: 192.168.50.14
   #
   # worker3-0_port:
   #   type: OS::Neutron::Port
@@ -287,12 +287,12 @@ resources:
   #     name: worker3-port-0
   #     network:
   #       get_resource: dhcp_network
-  #     mac_address: "52:54:00:00:FA:10"
+  #     mac_address: "52:54:00:00:32:0F"
   #     port_security_enabled: false
   #     fixed_ips:
   #     - subnet:
   #         get_resource: dhcp_subnet
-  #       ip_address: 172.25.250.16
+  #       ip_address: 192.168.50.15
 
   fip_classroom:
     type: OS::Neutron::FloatingIP
@@ -477,8 +477,8 @@ resources:
       networks:
       - port:
           get_resource: utility-0_port
-      # - port:
-      #     get_resource: utility-1_port
+      - port:
+          get_resource: utility-1_port
       - port:
           get_resource: utility-2_port
       - port:
@@ -500,7 +500,7 @@ resources:
           - echo -e '172.25.254.254\tmaterials.example.com materials' >> /etc/hosts
           - echo -e '10.30.0.5\tprovision.example.com provision' >> /etc/hosts
           - echo "System$(ip a | grep '^2:' | cut -d':' -f2)" > /tmp/NIC1
-          # - echo "System$(ip a | grep '^3:' | cut -d':' -f2)" > /tmp/NIC2
+          - echo "System$(ip a | grep '^3:' | cut -d':' -f2)" > /tmp/NIC2
           - nmcli con mod "$(cat /tmp/NIC1)" connection.autoconnect yes
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.ignore-auto-dns yes
           - nmcli con mod "$(cat /tmp/NIC1)" ipv6.ignore-auto-dns yes
@@ -510,27 +510,26 @@ resources:
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns 172.25.250.254
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns-search lab.example.com,example.com
           #- nmcli con mod "$(cat /tmp/NIC1)" connection.zone trusted
-          # - nmcli con mod "$(cat /tmp/NIC2)" connection.autoconnect yes
-          # - nmcli con mod "$(cat /tmp/NIC2)" ipv4.ignore-auto-dns yes
-          # - nmcli con mod "$(cat /tmp/NIC2)" ipv6.ignore-auto-dns yes
-          # - nmcli con mod "$(cat /tmp/NIC2)" ipv4.addresses 192.168.50.254/24
-          # - nmcli con mod "$(cat /tmp/NIC2)" ipv4.method static
+          - nmcli con mod "$(cat /tmp/NIC2)" connection.autoconnect yes
+          - nmcli con mod "$(cat /tmp/NIC2)" ipv4.ignore-auto-dns yes
+          - nmcli con mod "$(cat /tmp/NIC2)" ipv6.ignore-auto-dns yes
+          - nmcli con mod "$(cat /tmp/NIC2)" ipv4.addresses 192.168.50.254/24
+          - nmcli con mod "$(cat /tmp/NIC2)" ipv4.method static
           - nmcli con reload
           - nmcli con up "$(cat /tmp/NIC1)"
-          # - nmcli con up "$(cat /tmp/NIC2)"
+          - nmcli con up "$(cat /tmp/NIC2)"
           - route add -net 172.25.254.0 netmask 255.255.255.0 gw 172.25.250.254 dev eth0
           - echo $(sed -e 's/.*release //' -e 's/ .*//' /etc/redhat-release) > /tmp/rht-release
           #- echo -e "RHT_VENUE=ilt\nRHT_ROLE=bastion\nRHT_ENROLLMENT=\nRHT_COURSE=\nRHT_TITLE=\nRHT_VMTREE=rhel$(cat /tmp/rht-release)/x86_64\nRHT_NETWORK=no" > /etc/rht
           - hostnamectl set-hostname utility.lab.example.com
           - echo -e "[rhel-$(cat /tmp/rht-release)-for-x86_64-baseos-rpms]\nbaseurl = http://content.example.com/rhel$(cat /tmp/rht-release)/x86_64/dvd/BaseOS\nenabled = true\ngpgcheck = false\nname = Red Hat Enterprise Linux $(cat /tmp/rht-release) BaseOS (dvd)\n[rhel-$(cat /tmp/rht-release)-for-x86_64-appstream-rpms]\nbaseurl = http://content.example.com/rhel$(cat /tmp/rht-release)/x86_64/dvd/AppStream\nenabled = true\ngpgcheck = false\nname = Red Hat Enterprise Linux $(cat /tmp/rht-release) AppStream (dvd)" > /etc/yum.repos.d/rhel_dvd.repo
         users:
-          - name: lab
-            gecos: Lab User
+          - name: student
+            gecos: Student User
+            groups: wheel
             sudo: ALL=(ALL) NOPASSWD:ALL
-            passwd: $6$PwXvuS6P$8dbbPxMcMwCJwqlahjiNrkIWbbbmadGNgHppnz/Z0H8huqztgw11U6U0DPEIu1C0gxSwTbXLAF6eJeWGP70Jf1
+            passwd: $6$8oIjLCsc$/n1iQXYh1E6.uOEuJKgioqAtmqm2TQmkJGF2RwyteIr1tIfrPdiRYgWe6Sjen5/eMij2uHM/a1tue/QRlo3X80
             lock-passwd: false
-            ssh_authorized_keys:
-             - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGtUW3ismHyuCW4CDdTVOOOq6aySdtYenXFWWx7HJa4VTepkG00aaLId9ocra10hc+MB0GTJMCyabDv3i8NKdi6GDH/aOLVsp/Ewy8DEzZMBlJDCt4v2i4/wU4liw6KgEFkZs+5hnqU8d4QzldyGJ5onr+AGvFOKG68CS0BBl40Z1twf1HhCyx8k6nzD2ovlkxWRFZKPAFrtPCBVvQDkOfVFZF+lwzaSztgAjbFZ4A9jqQyUYx4kOJ5DtRef36ucdUdVQale0+8lICl7/gb142SPpYfhxe88/BJScLPRjvVNeu1TxRmoHtVazqnAoRxQYAn2MoI6AG+w6QuZf8f7aL LabGradingKey
         packages:
           - '@base'
           - firewalld
