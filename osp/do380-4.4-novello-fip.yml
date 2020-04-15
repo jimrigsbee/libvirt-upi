@@ -509,7 +509,9 @@ resources:
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.gateway 172.25.250.254
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns 172.25.250.254
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns-search lab.example.com,example.com
-          - echo nmcli con mod "$(cat /tmp/NIC2)" connection.autoconnect yes
+          - nmcli
+          - nmcli con reload
+          - nmcli 
           - nmcli con mod "$(cat /tmp/NIC2)" connection.autoconnect yes
           - nmcli con mod "$(cat /tmp/NIC2)" ipv4.ignore-auto-dns yes
           - nmcli con mod "$(cat /tmp/NIC2)" ipv6.ignore-auto-dns yes
