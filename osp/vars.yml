@@ -29,6 +29,9 @@ osp_auth_url: "http://150.238.9.131:5000//v3"
 #osp_auth_password:
 #osp_auth_project:
 
+dns_forward: 172.25.250.254
+ocp_dns_server: 172.25.250.253
+
 workers:
   - name: "worker01"
     disksize: 40G

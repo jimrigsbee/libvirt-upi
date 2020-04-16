@@ -17,6 +17,17 @@
     - configure_lbconfig
     - configure_ignitionfiles
 
+- name: Update Bastion
+  become: true
+  hosts: bastion
+  gather_facts: false
+  tasks:
+    - name: Drop DNS forwarder into DNSMasq for OpenShift subdomain
+      template:
+        src: ./files/dnsmasq.j2
+        dest: /etc/dnsmasq.d/ocp4.conf
+      when: ocp_dns_server is defined
+
 - name: Preparing and Deploying VM on Libvirt
   become: true
   hosts: ocp4_nodes

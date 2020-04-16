@@ -11,11 +11,30 @@
     regexp: "listen-on-v6"
     line: "#listen-on-v6 port 53 { ::1; };"
 
-- name: Allow queries from subnet 
+- name: Allow queries from subnet
   lineinfile:
     path: /etc/named.conf
     regexp: "allow-query"
-    line: "               allow-query { localhost; {{ virt_network }}; };" 
+    line: "               allow-query { localhost; {{ virt_network }}; };"
+  when: dns_forward is not defined
+
+- name: Allow queries from subnet
+  lineinfile:
+    path: /etc/named.conf
+    regexp: "allow-query"
+    line: "               allow-query { localhost; {{ virt_network }}; {{ dns_forward }}; };"
+  when: dns_forward is defined
+
+- name: Forward queries if forwarding requested
+  blockinfile:
+    path: /etc/named.conf
+    marker: "# {mark} ANSIBLE MANAGED FORWARDERS"
+    insertafter: "session-keyfile"
+    block: |
+      forwarders {
+        {{ dns_forward }};
+      };
+  when: dns_forward is defined     
 
 - name: Add domain zone to DNS server
   blockinfile:

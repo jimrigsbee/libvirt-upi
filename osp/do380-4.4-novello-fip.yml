@@ -163,6 +163,14 @@ resources:
           get_resource: student_subnet
         ip_address: 172.25.250.9
 
+  workstation-1_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: external_network }
+      port_security_enabled: false
+    depends_on:
+      - Router0_router_private_interface
+
   utility-0_port:
     type: OS::Neutron::Port
     properties:
@@ -339,7 +347,7 @@ resources:
     type: OS::Cinder::Volume
     properties:
       name: workstation-vda
-      image: rhel-workstation-vda-10G-8.1-20200316
+      image: rhel-workstation-vda-10G-8.1-20200415
       size: 10
 
   utility_volume_vdb:
@@ -461,10 +469,19 @@ resources:
       networks:
       - port:
           get_resource: workstation-0_port
+      - port:
+          get_resource: workstation-1_port
       block_device_mapping_v2:
       - volume_id:
           get_resource: workstation_volume_vda
         boot_index: 0
+      user_data: |
+        #cloud-config
+        runcmd:
+          - echo -e "student      ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
+          - touch /etc/sysconfig/network-scripts/route-eth0
+          - echo -e "192.168.50.0/24 via 172.25.250.253 dev eth0" >> /etc/sysconfig/network-scripts/route-eth0
+      user_data_format: RAW
 
   utility_server:
     type: OS::Nova::Server
@@ -509,13 +526,15 @@ resources:
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.gateway 172.25.250.254
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns 172.25.250.254
           - nmcli con mod "$(cat /tmp/NIC1)" ipv4.dns-search lab.example.com,example.com
+          - nmcli con mod "$(cat /tmp/NIC1)" connection.zone external
           - nmcli con reload
           - nmcli con mod "$(cat /tmp/NIC2)" connection.autoconnect yes
           - nmcli con mod "$(cat /tmp/NIC2)" ipv4.ignore-auto-dns yes
           - nmcli con mod "$(cat /tmp/NIC2)" ipv6.ignore-auto-dns yes
           - nmcli con mod "$(cat /tmp/NIC2)" ipv4.addresses 192.168.50.254/24
-          - nmcli con mod "$(cat /tmp/NIC2)" ipv4.gateway 192.168.50.254
+          - nmcli con mod "$(cat /tmp/NIC2)" ipv4.dns-search ocp4.lab.example.com
           - nmcli con mod "$(cat /tmp/NIC2)" ipv4.method static
+          - nmcli con mod "$(cat /tmp/NIC2)" connection.zone trusted
           - nmcli con reload
           - nmcli con up "$(cat /tmp/NIC1)"
           - nmcli con up "$(cat /tmp/NIC2)"

@@ -4,10 +4,11 @@
     name: firewalld
     enabled: true
     state: restarted
-    
+
 - name: Allowing firewall rules for services
   firewalld:
     service: "{{ item }}"
+    zone: external
     permanent: true
     state: enabled
     immediate: yes
