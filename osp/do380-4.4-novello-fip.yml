@@ -163,20 +163,6 @@ resources:
           get_resource: student_subnet
         ip_address: 172.25.250.9
 
-  workstation-1_port:
-    type: OS::Neutron::Port
-    properties:
-      network: { get_resource: external_network }
-      port_security_enabled: false
-    depends_on:
-      - Router0_router_private_interface
-
-  workstation-2_port:
-    type: OS::Neutron::Port
-    properties:
-      network: builder_network
-      mac_address: "52:54:00:30:33:fe"
-
   utility-0_port:
     type: OS::Neutron::Port
     properties:
@@ -353,7 +339,7 @@ resources:
     type: OS::Cinder::Volume
     properties:
       name: workstation-vda
-      image: rhel-workstation-vda-10G-8.1-20200415
+      image: rhel-workstation-vda-10G-8.1-20200316
       size: 10
 
   utility_volume_vdb:
@@ -475,28 +461,10 @@ resources:
       networks:
       - port:
           get_resource: workstation-0_port
-      - port:
-          get_resource: workstation-1_port
-      - port:
-          get_resource: workstation-2_port
       block_device_mapping_v2:
       - volume_id:
           get_resource: workstation_volume_vda
         boot_index: 0
-      user_data: |
-        #cloud-config
-        users:
-          - name: student
-            gecos: Student User
-            groups: wheel
-            sudo: ALL=(ALL) NOPASSWD:ALL
-            passwd: $6$8oIjLCsc$/n1iQXYh1E6.uOEuJKgioqAtmqm2TQmkJGF2RwyteIr1tIfrPdiRYgWe6Sjen5/eMij2uHM/a1tue/QRlo3X80
-            lock-passwd: false
-        runcmd:
-          - touch /etc/sysconfig/network-scripts/route-eth0
-          - echo -e '192.168.50.0/24 via 172.25.250.253 dev eth0' >> /etc/sysconfig/network-scripts/route-eth0
-          - route add -net 192.168.50.0 netmask 255.255.255.0 gw 172.25.250.253 dev eth0
-      user_data_format: RAW
 
   utility_server:
     type: OS::Nova::Server
