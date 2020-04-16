@@ -580,8 +580,8 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: bootstrap_volume_vda
-        boot_index: 1
-      - boot_index: 0
+        boot_index: 0
+      - boot_index: 1
         delete_on_termination: true
         device_name: hda
         image: ipxe-net0-20200124.iso
@@ -603,8 +603,8 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: master1_volume_vda
-        boot_index: 1
-      - boot_index: 0
+        boot_index: 0
+      - boot_index: 1
         delete_on_termination: true
         device_name: hda
         image: ipxe-net0-20200124.iso
@@ -626,8 +626,8 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: master2_volume_vda
-        boot_index: 1
-      - boot_index: 0
+        boot_index: 0
+      - boot_index: 1
         delete_on_termination: true
         device_name: hda
         image: ipxe-net0-20200124.iso
@@ -649,8 +649,8 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: master3_volume_vda
-        boot_index: 1
-      - boot_index: 0
+        boot_index: 0
+      - boot_index: 1
         delete_on_termination: true
         device_name: hda
         image: ipxe-net0-20200124.iso
@@ -672,8 +672,8 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: worker1_volume_vda
-        boot_index: 1
-      - boot_index: 0
+        boot_index: 0
+      - boot_index: 1
         delete_on_termination: true
         device_name: hda
         image: ipxe-net0-20200124.iso
@@ -695,8 +695,8 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: worker2_volume_vda
-        boot_index: 1
-      - boot_index: 0
+        boot_index: 0
+      - boot_index: 1
         delete_on_termination: true
         device_name: hda
         image: ipxe-net0-20200124.iso
@@ -718,8 +718,8 @@ resources:
       block_device_mapping_v2:
       - volume_id:
           get_resource: worker3_volume_vda
-        boot_index: 1
-      - boot_index: 0
+        boot_index: 0
+      - boot_index: 1
         delete_on_termination: true
         device_name: hda
         image: ipxe-net0-20200124.iso

@@ -25,7 +25,7 @@
   os_server_action:
     action: stop
     server: "{{ item.split('.')[0] }}"
-    wait: yes
+    wait: no
     auth:
       auth_url: "{{ osp_auth_url }}"
       username: "{{ osp_auth_username }}"
@@ -36,8 +36,27 @@
   with_items:
     - "{{ groups['ocp4_nodes'] }}"
   when: cloud_provider == 'osp'
+  ignore_errors: true
   tags:
     - install_openshift
+
+- name: Wait for servers to stop
+  os_server_info:
+    server: "{{ item.split('.')[0] }}"
+    auth:
+      auth_url: "{{ osp_auth_url }}"
+      username: "{{ osp_auth_username }}"
+      password: "{{ osp_auth_password }}"
+      project_name: "{{ osp_auth_project }}"
+      os_user_domain_name: Default
+      os_project_domain_name: Default
+  register: results
+  until: results.openstack_servers[0].status == 'SHUTOFF'
+  retries: 40
+  delay: 5
+  with_items:
+    - "{{ groups['ocp4_nodes'] }}"
+  when: cloud_provider == 'osp'
 
 - name: Start Cluster bootstrap and master VMs
   os_server_action:
@@ -55,6 +74,7 @@
     - "{{ groups['ocp4_bootstrap_vm'] }}"
     - "{{ groups['ocp4_master_vm'] }}"
   when: cloud_provider == 'osp'
+  ignore_errors: true
   tags:
     - install_openshift
 
@@ -172,6 +192,7 @@
   with_items:
     - "{{ groups['ocp4_worker_vm'] }}"
   when: cloud_provider == 'osp'
+  ignore_errors: true
   tags:
     - install_openshift
 
