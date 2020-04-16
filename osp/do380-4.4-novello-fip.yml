@@ -171,6 +171,12 @@ resources:
     depends_on:
       - Router0_router_private_interface
 
+  workstation-2_port:
+    type: OS::Neutron::Port
+    properties:
+      network: builder_network
+      mac_address: "52:54:00:30:33:fe"
+
   utility-0_port:
     type: OS::Neutron::Port
     properties:
@@ -471,6 +477,8 @@ resources:
           get_resource: workstation-0_port
       - port:
           get_resource: workstation-1_port
+      - port:
+          get_resource: workstation-2_port
       block_device_mapping_v2:
       - volume_id:
           get_resource: workstation_volume_vda
