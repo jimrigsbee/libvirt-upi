@@ -485,6 +485,12 @@ resources:
         boot_index: 0
       user_data: |
         #cloud-config
+        users:
+          - name: student
+            gecos: Student User
+            groups: wheel
+            passwd: $6$8oIjLCsc$/n1iQXYh1E6.uOEuJKgioqAtmqm2TQmkJGF2RwyteIr1tIfrPdiRYgWe6Sjen5/eMij2uHM/a1tue/QRlo3X80
+            lock-passwd: false
         runcmd:
           - echo -e "student      ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
           - touch /etc/sysconfig/network-scripts/route-eth0
