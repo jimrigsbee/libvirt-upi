@@ -17,6 +17,7 @@
 - name: Allowing firewall rules for ports
   firewalld:
     port: "{{ item }}"
+    zone: external    
     permanent: true
     state: enabled
     immediate: yes

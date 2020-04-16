@@ -10,7 +10,7 @@
         dest: "/etc/sysconfig/network-scripts/route-eth0"
     - name: Activate route
       shell: |
-        route add -net {{ virt_network }} netmask 255.255.255.0 gw {{ virt_network_router }} dev eth0
+        route add -net {{ virt_network }} gw {{ virt_network_router }} dev eth0
 
 - name: Wait for Helper Host to be ready
   become: false
